@@ -1,0 +1,15 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+flask-bcrypt
+flask-restful
+flask-jwt-extended
+flask-cors
+requests-oauthlib
+marshmallow
+python-dotenv
+python-slugify
+Pillow
+pytest
+flake8
+redis
