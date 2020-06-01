@@ -49,3 +49,6 @@ __pycache__
 env
 migrations
 redis-*
+
+# ignore sqlite
+data.db
