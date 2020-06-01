@@ -1,0 +1,41 @@
+from services.serve import db, bcrypt
+from datetime import datetime
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer,primary_key=True)
+    username = db.Column(db.String(100),nullable=False)
+    email = db.Column(db.String(100),unique=True,index=True,nullable=False)
+    password = db.Column(db.String(100),nullable=True)
+    role = db.Column(db.Integer,default=1)
+    avatar = db.Column(db.String(100),default='default.png')
+    created_at = db.Column(db.DateTime,default=datetime.now)
+    updated_at = db.Column(db.DateTime,default=datetime.now)
+
+    confirmation = db.relationship('Confirmation',backref='user',uselist=False,cascade='all,delete-orphan')
+
+    def __init__(self,**args):
+        self.username = args['username']
+        self.email = args['email']
+        if 'avatar' in args:
+            self.avatar = args['avatar']
+        if 'password' in args:
+            self.password = bcrypt.generate_password_hash(args['password']).decode("utf-8")
+
+    def change_update_time(self) -> "User":
+        self.updated_at = datetime.now()
+
+    def check_pass(self,password: str) -> bool:
+        return bcrypt.check_password_hash(self.password,password)
+
+    def hash_password(self,password: str) -> "User":
+        self.password = bcrypt.generate_password_hash(password).decode("utf-8")
+
+    def save_to_db(self) -> None:
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
