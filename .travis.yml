@@ -1,0 +1,23 @@
+services:
+  - redis-server
+env:
+  global:
+    - ACCESS_TOKEN_EXPIRES=900 REFRESH_TOKEN_EXPIRES=2592000 SMTP_SERVER=smtp.gmail.com SMTP_PORT=465 SMTP_USE_SSL=true SMTP_EMAIL=zookatest@gmail.com SMTP_PASSWORD=zooka2020
+language: python
+python:
+  - "3.8"
+cache: pip
+install:
+  - pip install -r restapi/requirements.txt
+  - pip install coveralls
+before_script:
+  - cd restapi/
+  - export FLASK_APP=app.py
+  - flask db init
+  - flask db migrate -m "init db"
+  - flask db upgrade
+  - cd services/tests/system
+  - touch __init__.py
+script: coverage run --source=. -m unittest discover
+after_success:
+  - coveralls
