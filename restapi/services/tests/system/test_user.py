@@ -421,6 +421,21 @@ class UserTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Image profile has updated.",json.loads(res.data)['message'])
 
+    def test_33_validation_update_account(self):
+        # check username blank
+        with self.app() as client:
+            res = client.put('/account/update-account',json={'username':''},
+                    headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(400,res.status_code)
+            self.assertListEqual(["Length must be between 3 and 100."],json.loads(res.data)['username'])
+
+    def test_34_update_account(self):
+        with self.app() as client:
+            res = client.put('/account/update-account',json={'username':self.NAME},
+                    headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(200,res.status_code)
+            self.assertEqual("Success update your account.",json.loads(res.data)['message'])
+
     def test_99_delete_user_from_db(self):
         user = User.query.filter_by(email=self.EMAIL_TEST).first()
         # delete avatar user

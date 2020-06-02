@@ -9,6 +9,8 @@ from services.models.UserModel import User
 class BaseTest(unittest.TestCase):
     ACCESS_TOKEN = None
     REFRESH_TOKEN = None
+    NAME = 'testtestingtest'
+    NAME_2 = 'testingtesttesting'
     EMAIL_TEST = "asd@gmail.com"
     EMAIL_TEST_2 = "asd2@gmail.com"
     DIR_IMAGE = os.path.join(_basedir,'services/static/test_image')

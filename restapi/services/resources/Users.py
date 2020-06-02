@@ -212,3 +212,15 @@ class UpdateAvatar(Resource):
         user.change_update_time()
         user.save_to_db()
         return {"message":"Image profile has updated."}, 200
+
+class UpdateAccount(Resource):
+    @jwt_required
+    def put(self):
+        _user_schema = UserSchema(only=("username",))
+        data = request.get_json()
+        args = _user_schema.load(data)
+        user = User.query.get(get_jwt_identity())
+        user.username = args['username']
+        user.change_update_time()
+        user.save_to_db()
+        return {"message":"Success update your account."}, 200
