@@ -220,6 +220,8 @@ class UpdateAccount(Resource):
         data = request.get_json()
         args = _user_schema.load(data)
         user = User.query.get(get_jwt_identity())
+        if user.username != args['username'] and User.query.filter_by(username=args['username']).first():
+            raise ValidationError({'username':['The username has already been taken.']})
         user.username = args['username']
         user.change_update_time()
         user.save_to_db()

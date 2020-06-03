@@ -7,6 +7,11 @@ class RegisterSchema(Schema):
     password = fields.Str(required=True,validate=validate.Length(min=6,max=100))
     confirm_password = fields.Str(required=True,validate=validate.Length(min=6,max=100))
 
+    @validates('username')
+    def validate_username(self,value):
+        if User.query.filter_by(username=value).first():
+            raise ValidationError('The username has already been taken.')
+
     @validates('email')
     def validate_email(self,value):
         if User.query.filter_by(email=value).first():
