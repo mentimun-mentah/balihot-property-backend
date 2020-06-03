@@ -274,7 +274,7 @@ class UserTest(BaseTest):
 
     def test_22_add_new_user(self):
         # register user asd2
-        self.register(self.EMAIL_TEST_2)
+        self.register(self.EMAIL_TEST_2,'asd2')
 
     def test_23_token_email_not_match_reset_password(self):
         password_reset = PasswordReset.query.filter_by(email=self.EMAIL_TEST).first()

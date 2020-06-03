@@ -33,10 +33,9 @@ class BaseTest(unittest.TestCase):
             self.__class__.ACCESS_TOKEN = json.loads(res.data)['access_token']
             self.__class__.REFRESH_TOKEN = json.loads(res.data)['refresh_token']
 
-    def register(self,email: str) -> "BaseTest":
-        # register user asd2
+    def register(self,email: str,username: str) -> "BaseTest":
         with self.app() as client:
-            res = client.post('/register',json={'username':'asd2',
+            res = client.post('/register',json={'username': username,
                 'email': email,'password':'asdasd',
                 'confirm_password':'asdasd'})
             print(res.data)

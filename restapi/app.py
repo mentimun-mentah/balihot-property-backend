@@ -1,5 +1,5 @@
 from services.serve import app, api
-from services.resources import Users
+from services.resources import Users, Regions
 from services.libs import OAuth2
 
 api.add_resource(Users.RegisterUser,'/register')
@@ -21,6 +21,9 @@ api.add_resource(Users.AddPassword,'/account/add-password')
 api.add_resource(Users.UpdatePassword,'/account/update-password')
 api.add_resource(Users.UpdateAvatar,'/account/update-avatar')
 api.add_resource(Users.UpdateAccount,'/account/update-account')
+
+api.add_resource(Regions.CreateRegion,'/region/create')
+api.add_resource(Regions.GetUpdateDeleteRegion,'/region/crud/<int:id>')
 
 if __name__ == '__main__':
     app.run(host='192.168.18.46')
