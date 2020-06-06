@@ -15,8 +15,7 @@ class RegionTest(BaseTest):
         self.login(self.EMAIL_TEST_2)
         # can't access without role admin
         with self.app() as client:
-            res = client.post('/region/create',json={'name':''},
-                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            res = client.post('/region/create',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(403,res.status_code)
             self.assertEqual("Forbidden access this endpoint!",json.loads(res.data)['msg'])
 
@@ -123,8 +122,7 @@ class RegionTest(BaseTest):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
-            res = client.put('/region/crud/9999',content_type=self.content_type,data={'name':''},
-                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            res = client.put('/region/crud/9999',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(403,res.status_code)
             self.assertEqual("Forbidden access this endpoint!",json.loads(res.data)['msg'])
 
@@ -132,8 +130,7 @@ class RegionTest(BaseTest):
 
         # region not found
         with self.app() as client:
-            res = client.put('/region/crud/9999',content_type=self.content_type,data={'name':''},
-                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            res = client.put('/region/crud/9999',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(404,res.status_code)
             self.assertEqual("Region not found",json.loads(res.data)['message'])
 

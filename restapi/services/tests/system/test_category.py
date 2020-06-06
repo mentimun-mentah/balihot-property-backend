@@ -15,8 +15,7 @@ class CategoryTest(BaseTest):
         self.login(self.EMAIL_TEST_2)
         # can't access without role admin
         with self.app() as client:
-            res = client.post('/category/create',json={'name':''},
-                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            res = client.post('/category/create',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(403,res.status_code)
             self.assertEqual("Forbidden access this endpoint!",json.loads(res.data)['msg'])
 
@@ -74,8 +73,7 @@ class CategoryTest(BaseTest):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
-            res = client.put('/category/crud/9999',json={'name':''},
-                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            res = client.put('/category/crud/9999',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(403,res.status_code)
             self.assertEqual("Forbidden access this endpoint!",json.loads(res.data)['msg'])
 
@@ -83,8 +81,7 @@ class CategoryTest(BaseTest):
 
         # category not found
         with self.app() as client:
-            res = client.put('/category/crud/9999',json={'name':''},
-                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            res = client.put('/category/crud/9999',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(404,res.status_code)
             self.assertEqual("Category not found",json.loads(res.data)['message'])
 
