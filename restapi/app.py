@@ -1,5 +1,5 @@
 from services.serve import app, api
-from services.resources import Users, Regions, Categories, Teams
+from services.resources import Users, Regions, Categories, Teams, Facilities
 from services.libs import OAuth2
 
 api.add_resource(Users.RegisterUser,'/register')
@@ -33,6 +33,10 @@ api.add_resource(Categories.GetUpdateDeleteCategory,'/category/crud/<int:id>')
 api.add_resource(Teams.AllTeam,'/teams')
 api.add_resource(Teams.CreateTeam,'/team/create')
 api.add_resource(Teams.GetUpdateDeleteTeam,'/team/crud/<int:id>')
+
+api.add_resource(Facilities.AllFacility,'/facilities')
+api.add_resource(Facilities.CreateFacility,'/facility/create')
+api.add_resource(Facilities.GetUpdateDeleteFacility,'/facility/crud/<int:id>')
 
 if __name__ == '__main__':
     app.run(host='192.168.18.47')
