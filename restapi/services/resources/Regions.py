@@ -61,3 +61,8 @@ class GetUpdateDeleteRegion(Resource):
         MagicImage.delete_image(file=region.image,path_delete='regions/')
         region.delete_from_db()
         return {"message":"Success delete region."}, 200
+
+class AllRegion(Resource):
+    def get(self):
+        regions = Region.query.all()
+        return _region_schema.dump(regions,many=True), 200

@@ -22,12 +22,15 @@ api.add_resource(Users.UpdatePassword,'/account/update-password')
 api.add_resource(Users.UpdateAvatar,'/account/update-avatar')
 api.add_resource(Users.UpdateAccount,'/account/update-account')
 
+api.add_resource(Regions.AllRegion,'/regions')
 api.add_resource(Regions.CreateRegion,'/region/create')
 api.add_resource(Regions.GetUpdateDeleteRegion,'/region/crud/<int:id>')
 
+api.add_resource(Categories.AllCategory,'/categories')
 api.add_resource(Categories.CreateCategory,'/category/create')
 api.add_resource(Categories.GetUpdateDeleteCategory,'/category/crud/<int:id>')
 
+api.add_resource(Teams.AllTeam,'/teams')
 api.add_resource(Teams.CreateTeam,'/team/create')
 api.add_resource(Teams.GetUpdateDeleteTeam,'/team/crud/<int:id>')
 

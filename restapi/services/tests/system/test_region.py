@@ -208,7 +208,14 @@ class RegionTest(BaseTest):
             self.assertEqual(400,res.status_code)
             self.assertListEqual(["The name has already been taken."],json.loads(res.data)['name'])
 
-    def test_09_validation_delete_region(self):
+    def test_09_get_all_region(self):
+        # check list is not empty & no need login
+        with self.app() as client:
+            res = client.get('/regions')
+            self.assertEqual(200,res.status_code)
+            self.assertNotEqual([],json.loads(res.data))
+
+    def test_10_validation_delete_region(self):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
@@ -223,7 +230,7 @@ class RegionTest(BaseTest):
             self.assertEqual(404,res.status_code)
             self.assertEqual("Region not found",json.loads(res.data)['message'])
 
-    def test_10_delete_region_one(self):
+    def test_11_delete_region_one(self):
         region = Region.query.filter_by(name=self.NAME).first()
 
         with self.app() as client:
@@ -231,7 +238,7 @@ class RegionTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success delete region.",json.loads(res.data)['message'])
 
-    def test_11_delete_region_two(self):
+    def test_12_delete_region_two(self):
         region = Region.query.filter_by(name=self.NAME_2).first()
 
         with self.app() as client:

@@ -46,3 +46,8 @@ class GetUpdateDeleteCategory(Resource):
         category = Category.query.filter_by(id=id).first_or_404('Category not found')
         category.delete_from_db()
         return {"message":"Success delete category."}, 200
+
+class AllCategory(Resource):
+    def get(self):
+        categories = Category.query.all()
+        return _category_schema.dump(categories,many=True), 200

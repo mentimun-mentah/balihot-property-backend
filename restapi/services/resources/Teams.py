@@ -66,3 +66,8 @@ class GetUpdateDeleteTeam(Resource):
         MagicImage.delete_image(file=team.image,path_delete='teams/')
         team.delete_from_db()
         return {"message":"Success delete team."}, 200
+
+class AllTeam(Resource):
+    def get(self):
+        teams = Team.query.all()
+        return _team_schema.dump(teams,many=True), 200
