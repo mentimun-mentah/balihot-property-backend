@@ -1,17 +1,25 @@
 import os, uuid
-from typing import TextIO, Union, Dict
+from typing import TextIO, Union, Dict, List
 from PIL import Image, ImageOps
 
 class MagicImage:
     FILE_NAME = None
     _BASE_DIR = os.path.join(os.path.dirname(__file__),'../static/')
 
-    def __init__(self,file: Union[TextIO,Dict[str,TextIO]], width: int, height: int, path_upload: str, square = True):
+    def __init__(self,file: Union[TextIO,Dict[str,TextIO],List[TextIO]],
+            width: int,
+            height: int,
+            path_upload: str,
+            square = True,
+            **kwargs):
+
         self.file = file
         self.width = width
         self.height = height
         self.square = square
         self.path_upload = path_upload
+        if 'dir_name' in kwargs:
+            self.dir_name = kwargs['dir_name']
 
     def _crop_center(self,pil_img: TextIO, crop_width: int, crop_height: int) -> TextIO:
         img_width, img_height = pil_img.size
@@ -35,7 +43,7 @@ class MagicImage:
         pil_img.info["exif"] = new_exif
         return pil_img
 
-    def _save_file(self,file: TextIO) -> str:
+    def _save_file(self,file: TextIO,**kwargs) -> str:
         # save image
         with Image.open(file) as im:
             # set filename
@@ -50,7 +58,10 @@ class MagicImage:
             img = self._remove_exif_tag(img)
             # flip image to right path
             img = ImageOps.exif_transpose(img)
-            img.save(os.path.join(self._BASE_DIR,self.path_upload,filename))
+            if 'path' in kwargs:
+                img.save(os.path.join(kwargs['path'],filename))
+            else:
+                img.save(os.path.join(self._BASE_DIR,self.path_upload,filename))
 
         return filename
 
@@ -60,6 +71,18 @@ class MagicImage:
             files_name = dict()
             for index,file in self.file.items():
                 filename = self._save_file(file)
+                files_name[index] = filename
+
+            self.FILE_NAME = files_name
+        elif isinstance(self.file,list):
+            # create directory if file isn't exists
+            path = os.path.join(self._BASE_DIR,self.path_upload,self.dir_name)
+            if not os.path.exists(path):
+                os.mkdir(path)
+            # temp storage to save filename in dict
+            files_name = dict()
+            for index,file in enumerate(self.file):
+                filename = self._save_file(file,path=path)
                 files_name[index] = filename
 
             self.FILE_NAME = files_name
