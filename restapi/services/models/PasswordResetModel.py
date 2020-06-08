@@ -1,8 +1,8 @@
-import uuid
+import uuid, os
 from services.serve import db
 from time import time
 from datetime import datetime
-from flask import request, url_for
+from flask import url_for
 from services.libs.MailSmtp import MailSmtp
 
 class PasswordReset(db.Model):
@@ -19,7 +19,7 @@ class PasswordReset(db.Model):
         self.id = uuid.uuid4().hex
 
     def send_email_reset_password(self) -> None:
-        link = request.url_root[:-1] + url_for('user.reset_password',token=self.id)
+        link = os.getenv("APP_URL") + url_for('user.reset_password',token=self.id)
         MailSmtp.send_email([self.email],'Reset Password','email/EmailResetPassword.html',link=link)
 
     @property

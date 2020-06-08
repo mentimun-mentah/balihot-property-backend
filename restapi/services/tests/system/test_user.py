@@ -70,7 +70,9 @@ class UserTest(BaseTest):
         with self.app() as client:
             res = client.put('/user-confirm/{}'.format(user.confirmation.id))
             self.assertEqual(200,res.status_code)
-            self.assertEqual(f'Your email {user.email} has been activated',json.loads(res.data)['message'])
+            self.assertIn("username",json.loads(res.data).keys())
+            self.assertIn("access_token",json.loads(res.data).keys())
+            self.assertIn("refresh_token",json.loads(res.data).keys())
 
     def test_04_email_already_activated(self):
         user = User.query.filter_by(email=self.EMAIL_TEST).first()
