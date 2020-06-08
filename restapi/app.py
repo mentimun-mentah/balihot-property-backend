@@ -50,4 +50,4 @@ api.add_resource(Types.CreateType,'/type/create')
 api.add_resource(Types.GetUpdateDeleteType,'/type/crud/<int:id>')
 
 if __name__ == '__main__':
-    app.run(host='192.168.18.48')
+    app.run(host='192.168.18.47')
