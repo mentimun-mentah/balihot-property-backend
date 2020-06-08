@@ -50,7 +50,16 @@ class ConfirmEmail(Resource):
 
         confirmation.activated = True
         confirmation.save_to_db()
-        return {"message":f"Your email {confirmation.user.email} has been activated"}, 200
+        # create access_token & refresh token
+        access_token = create_access_token(identity=confirmation.user.id,fresh=True)
+        refresh_token = create_refresh_token(identity=confirmation.user.id)
+        # encode jti token to store database redis
+        access_jti = get_jti(encoded_token=access_token)
+        refresh_jti = get_jti(encoded_token=refresh_token)
+        # store to database redis
+        conn_redis.set(access_jti, 'false', _ACCESS_EXPIRES)
+        conn_redis.set(refresh_jti, 'false', _REFRESH_EXPIRES)
+        return {"access_token": access_token,"refresh_token": refresh_token,"username": confirmation.user.username}, 200
 
 class ResendEmail(Resource):
     def post(self):
@@ -96,7 +105,7 @@ class RefreshToken(Resource):
     def post(self):
         user_id = get_jwt_identity()
         new_token = create_access_token(identity=user_id,fresh=False)
-        access_jti = get_jti(new_token)
+        access_jti = get_jti(encoded_token=new_token)
         conn_redis.set(access_jti, 'false', _ACCESS_EXPIRES)
         return {"access_token": new_token}, 200
 
