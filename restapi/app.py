@@ -48,4 +48,4 @@ api.add_resource(Facilities.GetUpdateDeleteFacility,'/facility/crud/<int:id>')
 api.add_resource(Properties.CreateProperty,'/property/create')
 
 if __name__ == '__main__':
-    app.run(host='192.168.18.47')
+    app.run(host='192.168.18.48')
