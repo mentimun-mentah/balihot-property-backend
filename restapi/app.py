@@ -5,8 +5,8 @@ from services.resources import (
     Categories,
     Teams,
     Facilities,
-    Properties
-    Types,
+    Properties,
+    Types
 )
 from services.libs import OAuth2
 
