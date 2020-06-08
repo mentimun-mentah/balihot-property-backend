@@ -5,6 +5,7 @@ from services.resources import (
     Categories,
     Teams,
     Facilities,
+    Properties
     Types,
 )
 from services.libs import OAuth2
@@ -49,5 +50,7 @@ api.add_resource(Types.AllType,'/types')
 api.add_resource(Types.CreateType,'/type/create')
 api.add_resource(Types.GetUpdateDeleteType,'/type/crud/<int:id>')
 
+api.add_resource(Properties.CreateProperty,'/property/create')
+
 if __name__ == '__main__':
-    app.run(host='192.168.18.47')
+    app.run(host='192.168.18.48')
