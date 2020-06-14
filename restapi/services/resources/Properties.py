@@ -16,6 +16,7 @@ class CreateProperty(Resource):
         _image_schema = AddImagePropertySchema()
         files = _image_schema.load(request.files)
         data = _property_schema.load(request.form)
+        # check name exists in db
         magic_image = MagicImage(file=files['images'],width=1144,height=763,path_upload='properties/',
             square=False,dir_name=slugify(data['name']))
         magic_image.save_image()
