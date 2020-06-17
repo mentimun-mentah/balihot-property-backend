@@ -53,4 +53,8 @@ api.add_resource(Types.GetUpdateDeleteType,'/type/crud/<int:id>')
 api.add_resource(Properties.CreateProperty,'/property/create')
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     app.run()
+=======
+    app.run(host='192.168.18.47')
+>>>>>>> 7dcb66ea6c497b6113816ca4904d6e14f8928653
