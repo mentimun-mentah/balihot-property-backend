@@ -11,5 +11,4 @@ python-dotenv
 python-slugify
 Pillow
 pytest
-flake8
 redis
