@@ -16,7 +16,7 @@ class MailSmtp:
     _USE_SSL = os.getenv("SMTP_USE_SSL")
 
     @classmethod
-    def send_email(cls,email: List,subject: str,html: str,**param) -> None:
+    def send_email(cls,email: List[str],subject: str,html: str,**param) -> None:
         if not cls._EMAIL: raise MailSmtpException('Email for sender not found')
         if not cls._PASSWORD: raise MailSmtpException('Password for email not found')
 
