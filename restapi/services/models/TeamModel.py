@@ -1,4 +1,5 @@
 from services.serve import db
+from datetime import datetime
 
 class Team(db.Model):
     __tablename__ = 'teams'
@@ -8,12 +9,17 @@ class Team(db.Model):
     name = db.Column(db.String(100),unique=True,index=True,nullable=False)
     title = db.Column(db.String(100),nullable=False)
     phone = db.Column(db.String(20),nullable=False)
+    created_at = db.Column(db.DateTime,default=datetime.now)
+    updated_at = db.Column(db.DateTime,default=datetime.now)
 
     def __init__(self,**args):
         self.image = args['image']
         self.name = args['name']
         self.title = args['title']
         self.phone = args['phone']
+
+    def change_update_time(self) -> "Team":
+        self.updated_at = datetime.now()
 
     def save_to_db(self) -> None:
         db.session.add(self)
