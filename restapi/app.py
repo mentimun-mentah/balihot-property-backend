@@ -2,7 +2,6 @@ from services.serve import app, api
 from services.resources import (
     Users,
     Regions,
-    Categories,
     Teams,
     Facilities,
     Properties,
@@ -34,10 +33,6 @@ api.add_resource(Regions.AllRegion,'/regions')
 api.add_resource(Regions.CreateRegion,'/region/create')
 api.add_resource(Regions.GetUpdateDeleteRegion,'/region/crud/<int:id>')
 
-api.add_resource(Categories.AllCategory,'/categories')
-api.add_resource(Categories.CreateCategory,'/category/create')
-api.add_resource(Categories.GetUpdateDeleteCategory,'/category/crud/<int:id>')
-
 api.add_resource(Teams.AllTeam,'/teams')
 api.add_resource(Teams.CreateTeam,'/team/create')
 api.add_resource(Teams.GetUpdateDeleteTeam,'/team/crud/<int:id>')
@@ -53,4 +48,4 @@ api.add_resource(Types.GetUpdateDeleteType,'/type/crud/<int:id>')
 api.add_resource(Properties.CreateProperty,'/property/create')
 
 if __name__ == '__main__':
-    app.run(host='192.168.18.53')
+    app.run(host='192.168.18.55')

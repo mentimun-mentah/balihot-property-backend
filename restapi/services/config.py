@@ -15,7 +15,7 @@ class Config:
 
 class Development(Config):
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URI = 'postgresql:///balihotproperty'
+    SQLALCHEMY_DATABASE_URI = 'postgresql:///balihotproperty'
 
 class Production(Config):
     DEBUG = False

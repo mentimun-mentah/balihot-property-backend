@@ -6,6 +6,8 @@ class TeamSchema(Schema):
     name = fields.Str(required=True,validate=validate.Length(min=3,max=100))
     title = fields.Str(required=True,validate=validate.Length(min=3,max=100))
     phone = fields.Number(required=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
 
     @validates('phone')
     def validate_phone(self,value):

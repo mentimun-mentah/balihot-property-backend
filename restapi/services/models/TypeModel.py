@@ -5,8 +5,7 @@ class Type(db.Model):
 
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(100),unique=True,index=True,nullable=False)
-    category_id = db.Column(db.Integer,db.ForeignKey('categories.id'),nullable=False)
-    properties = db.relationship('Property',backref='property',cascade='all,delete-orphan')
+    properties = db.relationship('Property',backref='type',cascade='all,delete-orphan')
 
     def save_to_db(self) -> None:
         db.session.add(self)

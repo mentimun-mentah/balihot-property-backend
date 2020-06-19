@@ -16,7 +16,7 @@ class CreateType(Resource):
         if Type.query.filter_by(name=args['name']).first():
             raise ValidationError({'name':['The name has already been taken.']})
 
-        type_model = Type(name=args['name'],category_id=args['category_id'])
+        type_model = Type(name=args['name'])
         type_model.save_to_db()
         return {"message":"Success add type."}, 201
 
@@ -37,7 +37,6 @@ class GetUpdateDeleteType(Resource):
             raise ValidationError({'name':['The name has already been taken.']})
 
         type_model.name = args['name']
-        type_model.category_id = args['category_id']
         type_model.save_to_db()
         return {"message":"Success update type."}, 200
 

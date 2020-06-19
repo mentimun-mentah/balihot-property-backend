@@ -56,6 +56,7 @@ class GetUpdateDeleteTeam(Resource):
         team.name = data['name']
         team.title = data['title']
         team.phone = str(int(data['phone']))
+        team.change_update_time()
         team.save_to_db()
         return {"message":"Success update team."}, 200
 
