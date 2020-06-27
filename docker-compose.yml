@@ -1,0 +1,36 @@
+version: '3.8'
+services: 
+  backend:
+    build: 
+      context: ./restapi
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - REDIS_DB_HOST=redis-server
+      - SQLALCHEMY_DATABASE_URI=postgresql://balihotproperty:123@postgres/balihotproperty
+    volumes: 
+      - "./restapi:/app"
+      - "/app/migrations"
+    ports: 
+      - "5001:5000"
+    depends_on: 
+      - postgres
+      - pgadmin4
+      - redis-server
+  postgres:
+    image: "postgres"
+    environment: 
+      - POSTGRES_DB=balihotproperty
+      - POSTGRES_USER=balihotproperty
+      - POSTGRES_PASSWORD=123
+  pgadmin4:
+    image: "dpage/pgadmin4"
+    ports: 
+      - "5437:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=oman@balihotproperty.com
+      - PGADMIN_DEFAULT_PASSWORD=123
+  redis-server:
+    image: "redis"
+    sysctls:
+      - net.core.somaxconn=511

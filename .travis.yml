@@ -1,9 +1,18 @@
-dist: xenial
 services:
+  - postgresql
   - redis-server
 env:
   global:
-    - APP_URL=http://localhost:3000 ACCESS_TOKEN_EXPIRES=900 REFRESH_TOKEN_EXPIRES=2592000 SMTP_SERVER=smtp.gmail.com SMTP_PORT=465 SMTP_USE_SSL=true SMTP_EMAIL=zookatest@gmail.com SMTP_PASSWORD=zooka2020
+    - APP_URL=http://localhost:3000
+    - ACCESS_TOKEN_EXPIRES=900 
+    - REFRESH_TOKEN_EXPIRES=2592000
+    - SMTP_SERVER=smtp.gmail.com
+    - SMTP_PORT=465
+    - SMTP_USE_SSL=true
+    - SMTP_EMAIL=balihottest2020@gmail.com
+    - SMTP_PASSWORD=2020testbalihot
+    - REDIS_DB_HOST=localhost
+    - SQLALCHEMY_DATABASE_URI=postgresql://balihotproperty:123@localhost/balihotproperty
 language: python
 python:
   - "3.8"
@@ -12,8 +21,9 @@ install:
   - pip install -r restapi/requirements.txt
   - pip install coveralls
 before_script:
+  - psql -c "CREATE DATABASE balihotproperty;" -U postgres
+  - psql -c "CREATE USER balihotproperty WITH PASSWORD '123';" -U postgres
   - cd restapi/
-  - export FLASK_APP=app.py
   - flask db init
   - flask db migrate -m "init db"
   - flask db upgrade

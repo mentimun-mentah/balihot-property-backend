@@ -9,6 +9,7 @@ from services.config import Development
 from dotenv import load_dotenv
 from marshmallow import ValidationError
 from redis import Redis
+from os import getenv
 
 load_dotenv()
 
@@ -23,7 +24,7 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 # connect database redis
-conn_redis = Redis(host='localhost', port=6379, db=0,decode_responses=True)
+conn_redis = Redis(host=getenv('REDIS_DB_HOST'), port=6379, db=0,decode_responses=True)
 
 @app.errorhandler(ValidationError)
 def error_handler(err):
