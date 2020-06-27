@@ -1,24 +1,32 @@
-dist: bionic
+services:
+  - postgresql
+  - redis-server
+env:
+  global:
+    - TMPDIR=/tmp
+    - ACCESS_TOKEN_EXPIRES=900 
+    - REFRESH_TOKEN_EXPIRES=2592000
+    - SMTP_SERVER=smtp.gmail.com
+    - SMTP_PORT=465
+    - SMTP_USE_SSL=true
+    - SMTP_EMAIL=balihottest2020@gmail.com
+    - SMTP_PASSWORD=2020testbalihot
 language: python
 python:
   - "3.8"
-services:
-  - docker
-env:
-  DOCKER_COMPOSE_VERSION=1.26.0
-before_install:
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+cache: pip
+install:
+  - pip install -r restapi/requirements.txt
+  - pip install coveralls
 before_script:
-  - docker-compose up -d --build
-script:
-  - docker ps
-  - ./migrate.sh
-after_script:
-  - docker-compose down
+  - psql -c "CREATE DATABASE balihotproperty;" -U postgres
+  - psql -c "CREATE USER balihotproperty WITH PASSWORD '123';" -U postgres
+  - cd restapi/
+  - flask db init
+  - flask db migrate -m "init db"
+  - flask db upgrade
+  - cd services/tests/system
+  - touch __init__.py
+script: coverage run --source=. -m unittest discover
+after_success:
+  - coveralls
