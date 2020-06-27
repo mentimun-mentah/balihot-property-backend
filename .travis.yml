@@ -16,8 +16,7 @@ before_script:
   - docker-compose up -d --build
 
 script:
-  - docker-compose exec backend /bin/bash
-  - ls
+  - docker ps
 
 after_script:
   - docker-compose down
