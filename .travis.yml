@@ -18,6 +18,6 @@ before_script:
   - docker-compose up -d --build
 script:
   - docker ps
-  - docker exec -it balihot-property_backend_1 /bin/bash -c "ls; touch lol.txt; ls; flask db init"
+  - ./migrate.sh
 after_script:
   - docker-compose down
