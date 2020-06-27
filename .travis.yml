@@ -16,8 +16,11 @@ before_script:
   - docker-compose up -d --build
 
 script:
-  - docker ps
-  - docker exec -it balihot-property_backend_1 ls
+  - docker exec -it balihot-property_backend_1 pip install coveralls
+  - docker exec -it balihot-property_backend_1 flask db init
+  - docker exec -it balihot-property_backend_1 flask migrate -m "init db"
+  - docker exec -it balihot-property_backend_1 flask upgrade
+  - docker exec -it balihot-property_backend_1 touch services/tests/system/__init__.py
 
 after_script:
   - docker-compose down
