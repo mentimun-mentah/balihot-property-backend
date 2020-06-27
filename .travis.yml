@@ -17,7 +17,7 @@ before_script:
 
 script:
   - docker ps
-  - docker exec balihot-property_backend_1 pip install coveralls
+  - docker exec -it balihot-property_backend_1 ls
 
 after_script:
   - docker-compose down
