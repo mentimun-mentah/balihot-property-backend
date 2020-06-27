@@ -16,7 +16,7 @@ before_script:
   - docker-compose up -d --build
 
 script:
-  - docker ps
+  - docker-compose exec backend pip install coveralls
 
 after_script:
   - docker-compose down
