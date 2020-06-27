@@ -1,24 +1,30 @@
-dist: xenial
+sudo: required
+
 services:
-  - redis-server
+  - docker
+
 env:
-  global:
-    - APP_URL=http://localhost:3000 ACCESS_TOKEN_EXPIRES=900 REFRESH_TOKEN_EXPIRES=2592000 SMTP_SERVER=smtp.gmail.com SMTP_PORT=465 SMTP_USE_SSL=true SMTP_EMAIL=zookatest@gmail.com SMTP_PASSWORD=zooka2020
-language: python
-python:
-  - "3.8"
-cache: pip
-install:
-  - pip install -r restapi/requirements.txt
-  - pip install coveralls
+  DOCKER_COMPOSE_VERSION: 1.26.0
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
 before_script:
-  - cd restapi/
-  - export FLASK_APP=app.py
-  - flask db init
-  - flask db migrate -m "init db"
-  - flask db upgrade
-  - cd services/tests/system
-  - touch __init__.py
-script: coverage run --source=. -m unittest discover
+  - docker-compose up -d --build
+
+script:
+  - docker-compose exec backend pip install coveralls
+  - docker-compose exec backend flask db init
+  - docker-compose exec backend flask db migrate -m "init db"
+  - docker-compose exec backend flask db upgrade
+  - docker-compose exec backend touch services/tests/system/__init__.py
+  - docker-compose exec backend coverage run --source=services/tests/system/ -m unittest discover
+
 after_success:
-  - coveralls
+  - docker-compose exec backend coveralls
+
+after_script:
+  - docker-compose down

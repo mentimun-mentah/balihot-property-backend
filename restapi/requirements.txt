@@ -9,6 +9,7 @@ requests-oauthlib
 marshmallow
 python-dotenv
 python-slugify
+psycopg2-binary
 Pillow
 pytest
 redis
