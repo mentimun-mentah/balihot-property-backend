@@ -16,15 +16,7 @@ before_script:
   - docker-compose up -d --build
 
 script:
-  - docker-compose exec backend pip install coveralls
-  - docker-compose exec backend flask db init
-  - docker-compose exec backend flask db migrate -m "init db"
-  - docker-compose exec backend flask db upgrade
-  - docker-compose exec backend touch services/tests/system/__init__.py
-  - docker-compose exec backend coverage run --source=services/tests/system/ -m unittest discover
-
-after_success:
-  - docker-compose exec backend coveralls
+  - docker-compose exec backend /bin/bash
 
 after_script:
   - docker-compose down
