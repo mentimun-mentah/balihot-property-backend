@@ -1,11 +1,10 @@
-sudo: required
-
+language: python
+python:
+  - "3.8"
 services:
   - docker
-
 env:
   DOCKER_COMPOSE_VERSION=1.26.0
-
 before_install:
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -15,13 +14,10 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-
 before_script:
   - docker-compose up -d --build
-
 script:
   - docker ps
   - docker exec -it balihot-property_backend_1 /bin/bash -c "ls; touch lol.txt; ls; flask db init"
-
 after_script:
   - docker-compose down
