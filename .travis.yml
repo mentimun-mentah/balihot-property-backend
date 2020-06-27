@@ -17,8 +17,7 @@ before_script:
 
 script:
   - docker ps
-  - docker exec -it balihot-property_backend_1 /bin/bash
-  - ls
+  - docker exec -it "balihot-property_backend_1" sh -c "ls"
 
 after_script:
   - docker-compose down
