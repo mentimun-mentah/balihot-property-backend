@@ -21,7 +21,7 @@ before_script:
 
 script:
   - docker ps
-  - docker exec -it balihot-property_backend_1 /bin/bash -c "ls; touch lol.txt"
+  - docker exec -it balihot-property_backend_1 /bin/bash -c "ls; touch lol.txt; ls"
 
 after_script:
   - docker-compose down
