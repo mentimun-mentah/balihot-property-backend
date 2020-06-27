@@ -3,7 +3,6 @@ services:
   - redis-server
 env:
   global:
-    - TMPDIR=/tmp
     - ACCESS_TOKEN_EXPIRES=900 
     - REFRESH_TOKEN_EXPIRES=2592000
     - SMTP_SERVER=smtp.gmail.com
@@ -11,6 +10,8 @@ env:
     - SMTP_USE_SSL=true
     - SMTP_EMAIL=balihottest2020@gmail.com
     - SMTP_PASSWORD=2020testbalihot
+    - REDIS_DB_HOST=localhost
+    - SQLALCHEMY_DATABASE_URI=postgresql://balihotproperty:123@localhost/balihotproperty
 language: python
 python:
   - "3.8"

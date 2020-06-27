@@ -5,6 +5,9 @@ services:
       context: ./restapi
       dockerfile: Dockerfile
     restart: always
+    environment:
+      - REDIS_DB_HOST=redis-server
+      - SQLALCHEMY_DATABASE_URI=postgresql://balihotproperty:123@postgres/balihotproperty
     volumes: 
       - "./restapi:/app"
       - "/app/migrations"
