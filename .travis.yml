@@ -16,9 +16,8 @@ before_script:
   - docker-compose up -d --build
 
 script:
-  - docker exec -it balihot-property_backend_1 sh -c "flask db init"
-  - docker exec -it balihot-property_backend_1 sh -c "flask db migrate -m 'init db'"
-  - docker exec -it balihot-property_backend_1 sh -c "flask db upgrade"
+  - docker ps
+  - docker exec -it "balihot-property_backend_1" sh -c "flask db init"
 
 after_script:
   - docker-compose down
