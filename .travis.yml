@@ -23,11 +23,11 @@ install:
 before_script:
   - psql -c "CREATE DATABASE balihotproperty;" -U postgres
   - psql -c "CREATE USER balihotproperty WITH PASSWORD '123';" -U postgres
+  - psql -c "INSERT INTO types (name) VALUES ('Villa'),('Land')" -U balihotproperty
   - cd restapi/
   - flask db init
   - flask db migrate -m "init db"
   - flask db upgrade
-  - psql -c "INSERT INTO types (name) VALUES ('Villa'),('Land')" -U postgres
   - cd services/tests/system
   - touch __init__.py
 script: coverage run --source=. -m unittest discover
