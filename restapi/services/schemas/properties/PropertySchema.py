@@ -3,9 +3,6 @@ from marshmallow import Schema, fields, validate, validates, ValidationError, va
 from services.models.TypeModel import Type
 from services.models.RegionModel import Region
 
-# TODO:
-# set load_only
-
 class PropertySchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True,validate=validate.Length(min=3,max=100))
@@ -17,15 +14,15 @@ class PropertySchema(Schema):
     description = fields.Str(required=True,validate=validate.Length(min=3))
     # for property sale
     status = fields.Str(validate=validate.Length(min=3,max=20))
-    freehold_price = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
-    leasehold_price = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
-    leasehold_period = fields.Str(validate=validate.Length(min=3,max=40))
+    freehold_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
+    leasehold_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
+    leasehold_period = fields.Str(load_only=True,validate=validate.Length(min=3,max=40))
     # for property rent
     period = fields.Str(validate=validate.Length(min=3,max=40))
-    daily_price = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
-    weekly_price = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
-    monthly_price = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
-    annually_price = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
+    daily_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
+    weekly_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
+    monthly_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
+    annually_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
     # for villa
     facility = fields.Str(load_only=True,validate=validate.Length(min=1))
     bedroom = fields.Int(validate=validate.Range(min=1,error="Value must be greater than 0"))
