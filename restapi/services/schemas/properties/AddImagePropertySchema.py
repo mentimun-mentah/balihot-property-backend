@@ -10,9 +10,6 @@ class ImageField(fields.Field):
         # extract data
         data = data.getlist('images')
 
-        if len(data) < 5:
-            raise ValidationError("Minimum 5 images to be upload")
-
         for index,value in enumerate(data,1):
             if not value.filename:
                 raise ValidationError("Missing data[{}] for required field.".format(index))

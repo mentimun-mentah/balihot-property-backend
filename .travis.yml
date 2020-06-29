@@ -27,6 +27,7 @@ before_script:
   - flask db init
   - flask db migrate -m "init db"
   - flask db upgrade
+  - psql -c "INSERT INTO types (name) VALUES ('Villa'),('Land')" -U balihotproperty
   - cd services/tests/system
   - touch __init__.py
 script: coverage run --source=. -m unittest discover
