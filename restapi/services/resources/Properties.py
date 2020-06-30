@@ -82,7 +82,7 @@ class CreateProperty(Resource):
         CreateProperty.delete_data_unnecessarily(data)
 
         if len(files['images']) < 5:
-            raise ValidationError("Minimum 5 images to be upload")
+            raise ValidationError({'images':['Minimum 5 images to be upload']})
         # check name exists in db
         if Property.query.filter_by(name=data['name']).first():
             raise ValidationError({'name':['The name has already been taken.']})
