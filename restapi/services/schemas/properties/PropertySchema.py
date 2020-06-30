@@ -55,7 +55,7 @@ class PropertySchema(Schema):
         # example valid data: free hold,lease hold
         for check in [x.lower() for x in value.split(',')]:
             if check not in ['free hold','lease hold']:
-                raise ValidationError('Status must be Lease Hold or Free Hold')
+                raise ValidationError('Status must be between Lease Hold or Free Hold')
 
     @validates('period')
     def validate_period(self,value):
@@ -84,7 +84,8 @@ class PropertySchema(Schema):
 
         type_property = Type.query.get(data['type_id'])
 
-        # check if property for sale is exists
+        # check if property_for sale status is required
+        # check if property_for rent period is required
         for check in [x.strip().lower() for x in data['property_for'].split(',')]:
             if check == 'sale' and 'status' not in data:
                 errors['status'] = ['Missing data for required field.']
@@ -125,9 +126,9 @@ class PropertySchema(Schema):
                 errors.pop('freehold_price',None)
                 errors.pop('leasehold_price',None)
                 errors.pop('leasehold_period',None)
-            # if type is land property for must be sale
+            # property for land must be sale
             if data['property_for'] != 'sale':
-                errors['property_for'] = ['Property For must be sale']
+                errors['property_for'] = ['Property For must be sale only']
 
         # validation for villa property
         if type_property.name.lower() == 'villa':
