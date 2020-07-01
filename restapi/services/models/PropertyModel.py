@@ -18,6 +18,7 @@ class Property(db.Model):
     status = db.Column(db.String(30),nullable=True)
     youtube = db.Column(db.String(100),nullable=False)
     description = db.Column(db.Text,nullable=False)
+    hotdeal = db.Column(db.Boolean,default=False)
 
     bedroom = db.Column(db.Integer,nullable=True)
     bathroom = db.Column(db.Integer,nullable=True)
@@ -32,7 +33,7 @@ class Property(db.Model):
 
     type_id = db.Column(db.Integer,db.ForeignKey('types.id'),nullable=False)
     region_id = db.Column(db.Integer,db.ForeignKey('regions.id'),nullable=False)
-    prices = db.relationship('PropertyPrice',backref='property',cascade='all,delete-orphan')
+    price = db.relationship('PropertyPrice',backref='property',uselist=False,cascade='all,delete-orphan')
     facilities = db.relationship("Facility",secondary=PropertyFacility,backref=db.backref('properties'))
 
     def __init__(self,**args):
@@ -42,6 +43,7 @@ class Property(db.Model):
         self.property_for = args['property_for']
         self.youtube = args['youtube']
         self.description = args['description']
+        self.hotdeal = args['hotdeal']
         self.land_size = args['land_size']
         self.location = args['location']
         self.latitude = args['latitude']

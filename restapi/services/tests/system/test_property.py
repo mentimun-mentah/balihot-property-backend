@@ -1,5 +1,6 @@
 import os, io, json
 from basetest import BaseTest
+from services.models.PropertyModel import Property
 from services.models.UserModel import User
 from services.models.RegionModel import Region
 
@@ -77,11 +78,13 @@ class PropertyTest(BaseTest):
         with open(os.path.join(self.DIR_IMAGE,'image.jpg'),'rb') as im:
             img = io.BytesIO(im.read())
 
-        # check if name,type_id,region_id,property_for,land_size,youtube,description,location,latitude,longitude
+        # check if data is blank
+        # name,type_id,region_id,property_for,land_size,youtube,description,hotdeal,location,latitude,longitude
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                     data={'images': (img,'image.jpg'),'name':'','type_id':'','region_id':'','property_for':'',
-                    'land_size':'','youtube':'','description':'','location':'','latitude':'','longitude':''},
+                        'land_size':'','youtube':'','description':'','hotdeal':'',
+                        'location':'','latitude':'','longitude':''},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Length must be between 3 and 100.'],json.loads(res.data)['name'])
@@ -91,6 +94,7 @@ class PropertyTest(BaseTest):
             self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['land_size'])
             self.assertListEqual(['Length must be between 3 and 100.'],json.loads(res.data)['youtube'])
             self.assertListEqual(['Shorter than minimum length 3.'],json.loads(res.data)['description'])
+            self.assertListEqual(["Not a valid boolean."],json.loads(res.data)['hotdeal'])
             self.assertListEqual(['Shorter than minimum length 3.'],json.loads(res.data)['location'])
             self.assertListEqual(['Not a valid number.'],json.loads(res.data)['latitude'])
             self.assertListEqual(['Not a valid number.'],json.loads(res.data)['longitude'])
@@ -141,7 +145,7 @@ class PropertyTest(BaseTest):
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
                     'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Missing data for required field.'],json.loads(res.data)['status'])
@@ -154,7 +158,7 @@ class PropertyTest(BaseTest):
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
                     'property_for':'rent','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Missing data for required field.'],json.loads(res.data)['period'])
@@ -167,7 +171,7 @@ class PropertyTest(BaseTest):
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,'status':'free hold',
                     'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Missing data for required field.'],json.loads(res.data)['freehold_price'])
@@ -180,7 +184,7 @@ class PropertyTest(BaseTest):
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,'status':'lease hold',
                     'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Missing data for required field.'],json.loads(res.data)['leasehold_price'])
@@ -196,7 +200,7 @@ class PropertyTest(BaseTest):
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
                     'property_for':'rent','period':'daily,weekly,monthly,annually','land_size':1,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Missing data for required field.'],json.loads(res.data)['daily_price'])
@@ -215,7 +219,7 @@ class PropertyTest(BaseTest):
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 2,'region_id':region.id,
                     'property_for':'sale,rent','status':'free hold,lease hold','land_size':1,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Status cannot multiple select'],json.loads(res.data)['status'])
@@ -231,7 +235,7 @@ class PropertyTest(BaseTest):
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
                     'property_for':'sale','status':'free hold','land_size':1,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Missing data for required field.'],json.loads(res.data)['bedroom'])
@@ -249,7 +253,7 @@ class PropertyTest(BaseTest):
                     'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
                     'bathroom':1,'bedroom':1,'building_size':1,'facility':'0',
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                    'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                    'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Minimum 5 images to be upload'],json.loads(res.data)['images'])
@@ -274,7 +278,7 @@ class PropertyTest(BaseTest):
                 'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
                 'bathroom':1,'bedroom':1,'building_size':1,'facility':'0',
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Facility in order 1 not found'],json.loads(res.data)['facility'])
@@ -300,7 +304,7 @@ class PropertyTest(BaseTest):
                 'name':self.NAME,'type_id': 2,'region_id':region.id,
                 'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(201,res.status_code)
             self.assertEqual("Success add property.",json.loads(res.data)['message'])
@@ -326,10 +330,56 @@ class PropertyTest(BaseTest):
                 'name':self.NAME,'type_id': 2,'region_id':region.id,
                 'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
-                'description':'asdasd','location':'bali','latitude':1,'longitude':1},
+                'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['The name has already been taken.'],json.loads(res.data)['name'])
+
+    def test_06_get_property_by_id(self):
+        self.login(self.EMAIL_TEST_2)
+
+        property_db = Property.query.filter_by(name=self.NAME).first()
+        # check user is admin
+        with self.app() as client:
+            res = client.get('/property/crud/{}'.format(property_db.id),
+                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(403,res.status_code)
+            self.assertEqual("Forbidden access this endpoint!",json.loads(res.data)['msg'])
+
+        self.login(self.EMAIL_TEST)
+        # property not found
+        with self.app() as client:
+            res = client.get('/property/crud/99999',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(404,res.status_code)
+            self.assertEqual("Property not found",json.loads(res.data)['message'])
+        # get specific property
+        with self.app() as client:
+            res = client.get('/property/crud/{}'.format(property_db.id),
+                    headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(200,res.status_code)
+            self.assertIn('id',json.loads(res.data).keys())
+            self.assertIn('name',json.loads(res.data).keys())
+            self.assertIn('slug',json.loads(res.data).keys())
+            self.assertIn('images',json.loads(res.data).keys())
+            self.assertIn('property_for',json.loads(res.data).keys())
+            self.assertIn('period',json.loads(res.data).keys())
+            self.assertIn('status',json.loads(res.data).keys())
+            self.assertIn('youtube',json.loads(res.data).keys())
+            self.assertIn('description',json.loads(res.data).keys())
+            self.assertIn('hotdeal',json.loads(res.data).keys())
+            self.assertIn('bedroom',json.loads(res.data).keys())
+            self.assertIn('bathroom',json.loads(res.data).keys())
+            self.assertIn('building_size',json.loads(res.data).keys())
+            self.assertIn('land_size',json.loads(res.data).keys())
+            self.assertIn('location',json.loads(res.data).keys())
+            self.assertIn('latitude',json.loads(res.data).keys())
+            self.assertIn('longitude',json.loads(res.data).keys())
+            self.assertIn('created_at',json.loads(res.data).keys())
+            self.assertIn('updated_at',json.loads(res.data).keys())
+            self.assertIn('type_id',json.loads(res.data).keys())
+            self.assertIn('region_id',json.loads(res.data).keys())
+            self.assertIn('price',json.loads(res.data).keys())
+            self.assertIn('facilities',json.loads(res.data).keys())
 
     def test_98_delete_region(self):
         region = Region.query.filter_by(name=self.NAME).first()
