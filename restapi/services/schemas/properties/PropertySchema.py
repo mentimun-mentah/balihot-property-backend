@@ -12,6 +12,7 @@ class PropertySchema(Schema):
     land_size = fields.Int(required=True,validate=validate.Range(min=1,error="Value must be greater than 0"))
     youtube = fields.Str(required=True,validate=validate.Length(min=3,max=100))
     description = fields.Str(required=True,validate=validate.Length(min=3))
+    hotdeal = fields.Boolean(required=True)
     # for property sale
     status = fields.Str(validate=validate.Length(min=3,max=20))
     freehold_price = fields.Int(load_only=True,validate=validate.Range(min=1,error="Value must be greater than 0"))

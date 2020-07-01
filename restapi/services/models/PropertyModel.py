@@ -18,6 +18,7 @@ class Property(db.Model):
     status = db.Column(db.String(30),nullable=True)
     youtube = db.Column(db.String(100),nullable=False)
     description = db.Column(db.Text,nullable=False)
+    hotdeal = db.Column(db.Boolean,default=False)
 
     bedroom = db.Column(db.Integer,nullable=True)
     bathroom = db.Column(db.Integer,nullable=True)
@@ -42,6 +43,7 @@ class Property(db.Model):
         self.property_for = args['property_for']
         self.youtube = args['youtube']
         self.description = args['description']
+        self.hotdeal = args['hotdeal']
         self.land_size = args['land_size']
         self.location = args['location']
         self.latitude = args['latitude']
