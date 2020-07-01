@@ -32,7 +32,7 @@ class Property(db.Model):
 
     type_id = db.Column(db.Integer,db.ForeignKey('types.id'),nullable=False)
     region_id = db.Column(db.Integer,db.ForeignKey('regions.id'),nullable=False)
-    prices = db.relationship('PropertyPrice',backref='property',cascade='all,delete-orphan')
+    price = db.relationship('PropertyPrice',backref='property',uselist=False,cascade='all,delete-orphan')
     facilities = db.relationship("Facility",secondary=PropertyFacility,backref=db.backref('properties'))
 
     def __init__(self,**args):

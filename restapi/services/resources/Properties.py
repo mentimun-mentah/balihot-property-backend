@@ -106,3 +106,10 @@ class CreateProperty(Resource):
             [property_db.facilities.append(Facility.query.get(int(facility))) for facility in data['facility'].split(',')]
             property_db.save_to_db()
         return {"message":"Success add property."}, 201
+
+class GetUpdateDeleteProperty(Resource):
+    @jwt_required
+    @admin_required
+    def get(self,id: int):
+        property_db = Property.query.filter_by(id=id).first_or_404("Property not found")
+        return _property_schema.dump(property_db), 200

@@ -33,6 +33,13 @@ class PropertySchema(Schema):
     latitude = fields.Float(required=True)
     longitude = fields.Float(required=True)
 
+    slug = fields.Str(dump_only=True)
+    images = fields.Str(dump_only=True)
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+    facilities = fields.List(fields.Nested("FacilitySchema"))
+    price = fields.Nested("PropertyPriceSchema",exclude=("id",))
+
     @validates('type_id')
     def validate_type_id(self,value):
         if not Type.query.get(value):

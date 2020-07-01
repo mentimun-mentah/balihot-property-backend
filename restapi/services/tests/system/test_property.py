@@ -1,5 +1,6 @@
 import os, io, json
 from basetest import BaseTest
+from services.models.PropertyModel import Property
 from services.models.UserModel import User
 from services.models.RegionModel import Region
 
@@ -330,6 +331,51 @@ class PropertyTest(BaseTest):
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['The name has already been taken.'],json.loads(res.data)['name'])
+
+    def test_06_get_property_by_id(self):
+        self.login(self.EMAIL_TEST_2)
+
+        property_db = Property.query.filter_by(name=self.NAME).first()
+        # check user is admin
+        with self.app() as client:
+            res = client.get('/property/crud/{}'.format(property_db.id),
+                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(403,res.status_code)
+            self.assertEqual("Forbidden access this endpoint!",json.loads(res.data)['msg'])
+
+        self.login(self.EMAIL_TEST)
+        # property not found
+        with self.app() as client:
+            res = client.get('/property/crud/99999',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(404,res.status_code)
+            self.assertEqual("Property not found",json.loads(res.data)['message'])
+        # get specific property
+        with self.app() as client:
+            res = client.get('/property/crud/{}'.format(property_db.id),
+                    headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(200,res.status_code)
+            self.assertIn('id',json.loads(res.data).keys())
+            self.assertIn('name',json.loads(res.data).keys())
+            self.assertIn('slug',json.loads(res.data).keys())
+            self.assertIn('images',json.loads(res.data).keys())
+            self.assertIn('property_for',json.loads(res.data).keys())
+            self.assertIn('period',json.loads(res.data).keys())
+            self.assertIn('status',json.loads(res.data).keys())
+            self.assertIn('youtube',json.loads(res.data).keys())
+            self.assertIn('description',json.loads(res.data).keys())
+            self.assertIn('bedroom',json.loads(res.data).keys())
+            self.assertIn('bathroom',json.loads(res.data).keys())
+            self.assertIn('building_size',json.loads(res.data).keys())
+            self.assertIn('land_size',json.loads(res.data).keys())
+            self.assertIn('location',json.loads(res.data).keys())
+            self.assertIn('latitude',json.loads(res.data).keys())
+            self.assertIn('longitude',json.loads(res.data).keys())
+            self.assertIn('created_at',json.loads(res.data).keys())
+            self.assertIn('updated_at',json.loads(res.data).keys())
+            self.assertIn('type_id',json.loads(res.data).keys())
+            self.assertIn('region_id',json.loads(res.data).keys())
+            self.assertIn('price',json.loads(res.data).keys())
+            self.assertIn('facilities',json.loads(res.data).keys())
 
     def test_98_delete_region(self):
         region = Region.query.filter_by(name=self.NAME).first()
