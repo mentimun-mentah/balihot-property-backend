@@ -135,7 +135,7 @@ class PropertySchema(Schema):
                 errors.pop('leasehold_price',None)
                 errors.pop('leasehold_period',None)
             # property for land must be sale
-            if data['property_for'] != 'sale':
+            if data['property_for'].lower() != 'sale':
                 errors['property_for'] = ['Property For must be sale only']
 
         # validation for villa property
