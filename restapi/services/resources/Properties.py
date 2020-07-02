@@ -182,6 +182,15 @@ class GetUpdateDeleteProperty(Resource):
         property_db.save_to_db()
         return {"message":"Success update property."}, 200
 
+    @jwt_required
+    @admin_required
+    def delete(self,id: int):
+        property_db = Property.query.filter_by(id=id).first_or_404("Property not found")
+        # delete folder with image from storage
+        MagicImage.delete_folder(name_folder=property_db.slug,path_delete='properties/')
+        property_db.delete_from_db()
+        return {"message":"Success delete property."}, 200
+
 class DeleteImageProperty(Resource):
     @jwt_required
     @admin_required
