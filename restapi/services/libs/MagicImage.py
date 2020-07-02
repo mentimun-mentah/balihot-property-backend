@@ -95,3 +95,9 @@ class MagicImage:
         path = os.path.join(cls._BASE_DIR,path_delete,file or ' ')
         if os.path.exists(path):
             os.remove(path)
+
+    @classmethod
+    def rename_folder(cls,old_name: str, new_name: str, path_update: str) -> None:
+        path = os.path.join(cls._BASE_DIR,path_update,old_name or ' ')
+        if os.path.exists(path):
+            os.rename(path,os.path.join(cls._BASE_DIR,path_update,new_name))
