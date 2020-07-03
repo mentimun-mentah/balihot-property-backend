@@ -1,4 +1,4 @@
-import os, uuid
+import os, uuid, shutil
 from typing import TextIO, Union, Dict, List
 from PIL import Image, ImageOps
 
@@ -95,3 +95,15 @@ class MagicImage:
         path = os.path.join(cls._BASE_DIR,path_delete,file or ' ')
         if os.path.exists(path):
             os.remove(path)
+
+    @classmethod
+    def rename_folder(cls,old_name: str, new_name: str, path_update: str) -> None:
+        path = os.path.join(cls._BASE_DIR,path_update,old_name or ' ')
+        if os.path.exists(path):
+            os.rename(path,os.path.join(cls._BASE_DIR,path_update,new_name))
+
+    @classmethod
+    def delete_folder(cls,name_folder: str, path_delete: str) -> None:
+        path = os.path.join(cls._BASE_DIR,path_delete,name_folder or ' ')
+        if os.path.exists(path):
+            shutil.rmtree(path)

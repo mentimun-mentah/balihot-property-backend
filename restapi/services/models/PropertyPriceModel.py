@@ -31,6 +31,22 @@ class PropertyPrice(db.Model):
         if 'annually_price' in args:
             self.annually_price = args['annually_price']
 
+    def update_data_in_db(self,**args) -> "PropertyPrice":
+        if 'freehold_price' in args:
+            self.freehold_price = args['freehold_price']
+        if 'leasehold_price' in args:
+            self.leasehold_price = args['leasehold_price']
+        if 'leasehold_period' in args:
+            self.leasehold_period = args['leasehold_period']
+        if 'daily_price' in args:
+            self.daily_price = args['daily_price']
+        if 'weekly_price' in args:
+            self.weekly_price = args['weekly_price']
+        if 'monthly_price' in args:
+            self.monthly_price = args['monthly_price']
+        if 'annually_price' in args:
+            self.annually_price = args['annually_price']
+
     def save_to_db(self) -> None:
         db.session.add(self)
         db.session.commit()

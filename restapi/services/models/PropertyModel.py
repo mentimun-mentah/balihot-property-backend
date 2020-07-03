@@ -61,6 +61,39 @@ class Property(db.Model):
         if 'building_size' in args:
             self.building_size = args['building_size']
 
+    def update_data_in_db(self,**args) -> "Property":
+        self.name = args['name']
+        self.slug = args['slug']
+        self.property_for = args['property_for']
+        self.youtube = args['youtube']
+        self.description = args['description']
+        self.hotdeal = args['hotdeal']
+        self.land_size = args['land_size']
+        self.location = args['location']
+        self.latitude = args['latitude']
+        self.longitude = args['longitude']
+        self.type_id = args['type_id']
+        self.region_id = args['region_id']
+        if 'images' in args:
+            self.images = f"{self.images},{args['images']}"
+        if 'status' in args:
+            self.status = args['status']
+        if 'period' in args:
+            self.period = args['period']
+        if 'bedroom' in args:
+            self.bedroom = args['bedroom']
+        if 'bathroom' in args:
+            self.bathroom = args['bathroom']
+        if 'building_size' in args:
+            self.building_size = args['building_size']
+
+    def change_update_time(self) -> "Property":
+        self.updated_at = datetime.now()
+
+    def delete_facilities(self) -> None:
+        self.facilities = []
+        db.session.commit()
+
     def save_to_db(self) -> None:
         db.session.add(self)
         db.session.commit()
