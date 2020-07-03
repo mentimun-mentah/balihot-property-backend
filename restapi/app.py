@@ -45,7 +45,7 @@ api.add_resource(Types.AllType,'/types')
 
 api.add_resource(Properties.CreateProperty,'/property/create')
 api.add_resource(Properties.GetUpdateDeleteProperty,'/property/crud/<int:id>')
-api.add_resource(Properties.DeleteImageProperty,'/property/delete-image/<int:id>')
+api.add_resource(Properties.DeleteImageProperty,'/property/delete-images/<int:id>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
