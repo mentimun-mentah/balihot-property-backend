@@ -1,5 +1,6 @@
 from services.serve import db
 from datetime import datetime
+from sqlalchemy import func
 
 PropertyFacility = db.Table('property_facilities',
                     db.Column('id',db.Integer,primary_key=True),
@@ -89,6 +90,29 @@ class Property(db.Model):
 
     def change_update_time(self) -> "Property":
         self.updated_at = datetime.now()
+
+    @classmethod
+    def search_properties(cls,per_page: int, page: int, **args) -> "Property":
+        properties = cls.query.paginate(page,per_page,error_out=False)
+
+        if args['lat'] and args['lng'] and args['radius']:
+            stmt = db.session.query(
+                cls,(
+                    6371 * func.acos(func.cos(func.radians(args['lat'])) *
+                        func.cos(func.radians(cls.latitude)) *
+                        func.cos(func.radians(cls.longitude) - func.radians(args['lng'])) +
+                        func.sin(func.radians(args['lat'])) *
+                        func.sin(func.radians(cls.latitude))
+                    )
+                ).label('distance')
+            ).subquery()
+
+            location_alias = db.aliased(cls, stmt)
+            properties = db.session.query(location_alias) \
+                .filter(stmt.c.distance <= args['radius']).order_by(stmt.c.distance) \
+                .paginate(page,per_page,error_out=False)
+
+        return properties
 
     def delete_facilities(self) -> None:
         self.facilities = []

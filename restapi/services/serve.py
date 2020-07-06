@@ -50,10 +50,13 @@ if app.debug:
                 total_duration += q.duration
                 query_str += f'Query: {q.statement}\nDuration: {round(q.duration * 1000, 2)}ms\n'
 
-            print('=' * 80)
-            print('SQL Queries - {0} Queries Executed in {1}ms'.format(len(queries), round(total_duration * 1000, 2)))
-            print('=' * 80)
-            print(query_str.rstrip('\n'))
-            print('=' * 80)
+            print('=' * 80,flush=True)
+            print(
+                'SQL Queries - {0} Queries Executed in {1}ms'.format(len(queries), round(total_duration * 1000, 2)),
+                flush=True
+            )
+            print('=' * 80, flush=True)
+            print(query_str.rstrip('\n'),flush=True)
+            print('=' * 80,flush=True)
 
         return response
