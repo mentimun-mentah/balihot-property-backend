@@ -65,4 +65,9 @@ class GetUpdateDeleteRegion(Resource):
 class AllRegion(Resource):
     def get(self):
         regions = Region.query.all()
-        return _region_schema.dump(regions,many=True), 200
+        data = _region_schema.dump(regions,many=True)
+        if (listing := request.args.get('listing',default=None,type=str)):
+            if listing == 'true':
+                for region in data:
+                    region['listing'] = len(Region.query.get(region['id']).properties)
+        return data, 200

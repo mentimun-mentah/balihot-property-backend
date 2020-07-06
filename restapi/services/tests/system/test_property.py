@@ -667,7 +667,14 @@ class PropertyTest(BaseTest):
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['Minimum 5 images to be upload'],json.loads(res.data)['images'])
 
-    def test_15_get_property_by_id(self):
+    def test_15_get_all_property(self):
+        # check list is not empty & no need login
+        with self.app() as client:
+            res = client.get('/properties')
+            self.assertEqual(200,res.status_code)
+            self.assertNotEqual({},json.loads(res.data))
+
+    def test_16_get_property_by_id(self):
         self.login(self.EMAIL_TEST_2)
 
         property_db = Property.query.filter_by(name=self.NAME).first()
@@ -713,7 +720,7 @@ class PropertyTest(BaseTest):
             self.assertIn('price',json.loads(res.data).keys())
             self.assertIn('facilities',json.loads(res.data).keys())
 
-    def test_16_validation_delete_property(self):
+    def test_17_validation_delete_property(self):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
@@ -728,7 +735,7 @@ class PropertyTest(BaseTest):
             self.assertEqual(404,res.status_code)
             self.assertEqual("Property not found",json.loads(res.data)['message'])
 
-    def test_17_delete_property_one(self):
+    def test_18_delete_property_one(self):
         property_db = Property.query.filter_by(name=self.NAME).first()
 
         with self.app() as client:
@@ -737,7 +744,7 @@ class PropertyTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success delete property.",json.loads(res.data)['message'])
 
-    def test_18_delete_property_two(self):
+    def test_19_delete_property_two(self):
         property_db = Property.query.filter_by(name=self.NAME_2).first()
 
         with self.app() as client:
