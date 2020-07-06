@@ -1,6 +1,6 @@
 from services.serve import db
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 PropertyFacility = db.Table('property_facilities',
                     db.Column('id',db.Integer,primary_key=True),
@@ -93,7 +93,6 @@ class Property(db.Model):
 
     @classmethod
     def search_properties(cls,per_page: int, page: int, **args) -> "Property":
-        properties = cls.query.paginate(page,per_page,error_out=False)
 
         if args['lat'] and args['lng'] and args['radius']:
             stmt = db.session.query(
@@ -111,6 +110,31 @@ class Property(db.Model):
             properties = db.session.query(location_alias) \
                 .filter(stmt.c.distance <= args['radius']).order_by(stmt.c.distance) \
                 .paginate(page,per_page,error_out=False)
+        else:
+            stmt = db.session.query(cls)
+
+            if (region_id := args['region_id']): stmt = stmt.filter(cls.region_id == region_id)
+            if (type_id := args['type_id']): stmt = stmt.filter(cls.type_id == type_id)
+            if (property_for := args['property_for']):
+                filters = [cls.property_for.like(f"%{x}%") for x in property_for.split(',')]
+                stmt = stmt.filter(or_(*filters))
+            if (period := args['period']):
+                filters = [cls.period.like(f"%{x}%") for x in period.split(',')]
+                stmt = stmt.filter(or_(*filters))
+            if (status := args['status']):
+                filters = [cls.status.like(f"%{x}%") for x in status.split(',')]
+                stmt = stmt.filter(or_(*filters))
+            if (hotdeal := args['hotdeal']):
+                if hotdeal == 'true':
+                    stmt = stmt.filter(cls.hotdeal.is_(True))
+            if (bedroom := args['bedroom']):
+                stmt = stmt.filter(cls.bedroom == bedroom)
+            if (bathroom := args['bathroom']):
+                stmt = stmt.filter(cls.bathroom == bathroom)
+            if (location := args['location']):
+                stmt = stmt.filter(cls.location.like(f"%{location}%"))
+
+            properties = stmt.paginate(page,per_page,error_out=False)
 
         return properties
 

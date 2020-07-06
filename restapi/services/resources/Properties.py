@@ -221,11 +221,29 @@ class AllProperties(Resource):
         lat = request.args.get('lat',default=None,type=float)
         lng = request.args.get('lng',default=None,type=float)
         radius = request.args.get('radius',default=None,type=int)
+        region_id = request.args.get('region_id',default=None,type=int)
+        type_id = request.args.get('type_id',default=None,type=int)
+        property_for = request.args.get('property_for',default=None,type=str)
+        period = request.args.get('period',default=None,type=str)
+        status = request.args.get('status',default=None,type=str)
+        hotdeal = request.args.get('hotdeal',default=None,type=str)
+        bedroom = request.args.get('bedroom',default=None,type=int)
+        bathroom = request.args.get('bathroom',default=None,type=int)
+        location = request.args.get('location',default=None,type=str)
 
         args = {
             'lat':lat,
             'lng':lng,
-            'radius':radius
+            'radius':radius,
+            'region_id':region_id,
+            'type_id':type_id,
+            'property_for':property_for,
+            'period':period,
+            'status':status,
+            'hotdeal':hotdeal,
+            'bedroom':bedroom,
+            'bathroom':bathroom,
+            'location':location
         }
 
         properties = Property.search_properties(per_page=per_page,page=page,**args)
