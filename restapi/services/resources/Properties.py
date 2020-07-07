@@ -230,6 +230,9 @@ class AllProperties(Resource):
         bedroom = request.args.get('bedroom',default=None,type=int)
         bathroom = request.args.get('bathroom',default=None,type=int)
         location = request.args.get('location',default=None,type=str)
+        facility = request.args.get('facility',default=None,type=str)
+        min_price = request.args.get('min_price',default=None,type=int)
+        max_price = request.args.get('max_price',default=None,type=int)
 
         args = {
             'lat':lat,
@@ -243,7 +246,10 @@ class AllProperties(Resource):
             'hotdeal':hotdeal,
             'bedroom':bedroom,
             'bathroom':bathroom,
-            'location':location
+            'location':location,
+            'facility':facility,
+            'min_price':min_price,
+            'max_price':max_price
         }
 
         properties = Property.search_properties(per_page=per_page,page=page,**args)
