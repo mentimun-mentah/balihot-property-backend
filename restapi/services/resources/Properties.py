@@ -257,6 +257,8 @@ class AllProperties(Resource):
 
         results = dict(
             data = data,
+            total = properties.total,
+            total_db = Property.get_count(),
             next_num = properties.next_num,
             prev_num = properties.prev_num,
             page = properties.page,

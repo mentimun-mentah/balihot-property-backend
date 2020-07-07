@@ -1,6 +1,6 @@
 from services.serve import db
 from datetime import datetime
-from sqlalchemy import func, or_, and_
+from sqlalchemy import func, or_, and_, orm
 
 PropertyFacility = db.Table('property_facilities',
                     db.Column('id',db.Integer,primary_key=True),
@@ -92,6 +92,11 @@ class Property(db.Model):
         self.updated_at = datetime.now()
 
     @classmethod
+    def get_count(cls) -> int:
+        count = db.session.query(func.count(cls.id)).scalar()
+        return count
+
+    @classmethod
     def search_properties(cls,per_page: int, page: int, **args) -> "Property":
         from services.models.FacilityModel import Facility
         from services.models.PropertyPriceModel import PropertyPrice
@@ -173,7 +178,8 @@ class Property(db.Model):
                     )
                 )
 
-            properties = stmt.filter(preapre_stmt.c.distance <= args['radius']).order_by(preapre_stmt.c.distance) \
+            properties = stmt.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+                .filter(preapre_stmt.c.distance <= args['radius']).order_by(preapre_stmt.c.distance) \
                 .paginate(page,per_page,error_out=False)
         else:
             stmt = db.session.query(cls)
@@ -240,7 +246,8 @@ class Property(db.Model):
                     )
                 )
 
-            properties = stmt.paginate(page,per_page,error_out=False)
+            properties = stmt.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+                .paginate(page,per_page,error_out=False)
 
         return properties
 
