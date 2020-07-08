@@ -44,6 +44,7 @@ api.add_resource(Facilities.GetUpdateDeleteFacility,'/facility/crud/<int:id>')
 api.add_resource(Types.AllType,'/types')
 
 api.add_resource(Properties.AllProperties,'/properties')
+api.add_resource(Properties.GetPropertySlug,'/property/<slug>')
 api.add_resource(Properties.CreateProperty,'/property/create')
 api.add_resource(Properties.GetUpdateDeleteProperty,'/property/crud/<int:id>')
 api.add_resource(Properties.DeleteImageProperty,'/property/delete-images/<int:id>')

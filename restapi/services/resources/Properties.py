@@ -1,6 +1,7 @@
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required
 from services.models.TypeModel import Type
+from services.models.VisitModel import Visit
 from services.models.FacilityModel import Facility
 from services.models.PropertyModel import Property
 from services.models.PropertyPriceModel import PropertyPrice
@@ -230,6 +231,9 @@ class AllProperties(Resource):
         bedroom = request.args.get('bedroom',default=None,type=int)
         bathroom = request.args.get('bathroom',default=None,type=int)
         location = request.args.get('location',default=None,type=str)
+        facility = request.args.get('facility',default=None,type=str)
+        min_price = request.args.get('min_price',default=None,type=int)
+        max_price = request.args.get('max_price',default=None,type=int)
 
         args = {
             'lat':lat,
@@ -243,7 +247,10 @@ class AllProperties(Resource):
             'hotdeal':hotdeal,
             'bedroom':bedroom,
             'bathroom':bathroom,
-            'location':location
+            'location':location,
+            'facility':facility,
+            'min_price':min_price,
+            'max_price':max_price
         }
 
         properties = Property.search_properties(per_page=per_page,page=page,**args)
@@ -251,6 +258,7 @@ class AllProperties(Resource):
 
         results = dict(
             data = data,
+            total = properties.total,
             next_num = properties.next_num,
             prev_num = properties.prev_num,
             page = properties.page,
@@ -258,3 +266,13 @@ class AllProperties(Resource):
         )
 
         return results, 200
+
+class GetPropertySlug(Resource):
+    def get(self,slug: str):
+        property_db = Property.query.filter_by(slug=slug).first_or_404("Property not found")
+        # set visit if ip not found
+        Visit.set_visit(ip=request.remote_addr,visitable_id=property_db.id,visitable_type='view_property')
+        data = _property_schema.dump(property_db)
+        data['seen'] = Visit.get_seen_activity(visit_type='view_property',visit_id=property_db.id)
+
+        return data, 200
