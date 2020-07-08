@@ -269,10 +269,13 @@ class AllProperties(Resource):
 
 class GetPropertySlug(Resource):
     def get(self,slug: str):
-        property_db = Property.query.filter_by(slug=slug).first_or_404("Property not found")
+        property_db = Property.filter_by_slug(slug)
         # set visit if ip not found
         Visit.set_visit(ip=request.remote_addr,visitable_id=property_db.id,visitable_type='view_property')
         data = _property_schema.dump(property_db)
         data['seen'] = Visit.get_seen_activity(visit_type='view_property',visit_id=property_db.id)
+        # get similar listing random data
+        similar_listing = Property.load_similar_listing_random(type_id=property_db.type_id)
+        data['similar_listing'] = _property_schema.dump(similar_listing,many=True)
 
         return data, 200

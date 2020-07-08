@@ -92,6 +92,18 @@ class Property(db.Model):
         self.updated_at = datetime.now()
 
     @classmethod
+    def filter_by_slug(cls,slug: str) -> "Property":
+        return cls.query.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+            .filter_by(slug=slug).first_or_404("Property not found")
+
+    @classmethod
+    def load_similar_listing_random(cls,type_id: int) -> "Property":
+        return cls.query.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+            .filter_by(type_id=type_id) \
+            .order_by(func.random()) \
+            .limit(5).all()
+
+    @classmethod
     def search_properties(cls,per_page: int, page: int, **args) -> "Property":
         from services.models.FacilityModel import Facility
         from services.models.PropertyPriceModel import PropertyPrice
