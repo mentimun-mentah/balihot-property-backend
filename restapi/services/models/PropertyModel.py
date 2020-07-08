@@ -92,11 +92,6 @@ class Property(db.Model):
         self.updated_at = datetime.now()
 
     @classmethod
-    def get_count(cls) -> int:
-        count = db.session.query(func.count(cls.id)).scalar()
-        return count
-
-    @classmethod
     def search_properties(cls,per_page: int, page: int, **args) -> "Property":
         from services.models.FacilityModel import Facility
         from services.models.PropertyPriceModel import PropertyPrice
