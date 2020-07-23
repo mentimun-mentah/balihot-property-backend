@@ -756,6 +756,7 @@ class PropertyTest(BaseTest):
             self.assertIn('price',json.loads(res.data).keys())
             self.assertIn('facilities',json.loads(res.data).keys())
             self.assertIn('seen',json.loads(res.data).keys())
+            self.assertIn('similar_listing',json.loads(res.data).keys())
 
     def test_18_validation_delete_property(self):
         self.login(self.EMAIL_TEST_2)
