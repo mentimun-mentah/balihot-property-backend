@@ -92,6 +92,15 @@ class Property(db.Model):
         self.updated_at = datetime.now()
 
     @classmethod
+    def count_all_data(cls) -> int:
+        return db.session.query(func.count(cls.id)).scalar()
+
+    @classmethod
+    def search_by_location(cls,type_id: int, q: str) -> "Property":
+        return cls.query.filter(cls.type_id == type_id, cls.location.like('%' + q + '%')) \
+            .limit(20).all()
+
+    @classmethod
     def filter_by_slug(cls,slug: str) -> "Property":
         return cls.query.options(orm.joinedload('facilities'),orm.joinedload('price')) \
             .filter_by(slug=slug).first_or_404("Property not found")

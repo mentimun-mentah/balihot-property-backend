@@ -758,7 +758,19 @@ class PropertyTest(BaseTest):
             self.assertIn('seen',json.loads(res.data).keys())
             self.assertIn('similar_listing',json.loads(res.data).keys())
 
-    def test_18_validation_delete_property(self):
+    def test_18_search_property_by_location(self):
+        # type not found
+        with self.app() as client:
+            res = client.get('/property/search-by-location?type_id=99999')
+            self.assertEqual(404,res.status_code)
+            self.assertEqual("Type not found",json.loads(res.data)['message'])
+
+        with self.app() as client:
+            res = client.get('/property/search-by-location?type_id=2&q=a')
+            self.assertEqual(200,res.status_code)
+            self.assertNotEqual([],json.loads(res.data))
+
+    def test_19_validation_delete_property(self):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
@@ -773,7 +785,7 @@ class PropertyTest(BaseTest):
             self.assertEqual(404,res.status_code)
             self.assertEqual("Property not found",json.loads(res.data)['message'])
 
-    def test_19_delete_property_one(self):
+    def test_20_delete_property_one(self):
         property_db = Property.query.filter_by(name=self.NAME).first()
 
         with self.app() as client:
@@ -782,7 +794,7 @@ class PropertyTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success delete property.",json.loads(res.data)['message'])
 
-    def test_20_delete_property_two(self):
+    def test_21_delete_property_two(self):
         property_db = Property.query.filter_by(name=self.NAME_2).first()
 
         with self.app() as client:

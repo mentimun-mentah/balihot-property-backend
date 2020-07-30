@@ -5,10 +5,12 @@ from services.resources import (
     Teams,
     Facilities,
     Properties,
-    Types
+    Types,
+    Wishlists
 )
 from services.libs import OAuth2
 
+api.add_resource(Users.GetUser,'/user')
 api.add_resource(Users.RegisterUser,'/register')
 api.add_resource(Users.ConfirmEmail,'/user-confirm/<token>',endpoint='user.confirm')
 api.add_resource(Users.ResendEmail,'/resend-email')
@@ -48,6 +50,11 @@ api.add_resource(Properties.GetPropertySlug,'/property/<slug>')
 api.add_resource(Properties.CreateProperty,'/property/create')
 api.add_resource(Properties.GetUpdateDeleteProperty,'/property/crud/<int:id>')
 api.add_resource(Properties.DeleteImageProperty,'/property/delete-images/<int:id>')
+api.add_resource(Properties.SearchPropertyByLocation,'/property/search-by-location')
+
+api.add_resource(Wishlists.UserWishlist,'/wishlist/user')
+api.add_resource(Wishlists.LoveProperty,'/wishlist/love/<int:property_id>')
+api.add_resource(Wishlists.UnloveProperty,'/wishlist/unlove/<int:property_id>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
