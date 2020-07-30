@@ -1,4 +1,4 @@
-import os, smtplib, ssl
+import os, smtplib
 from flask import render_template
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -29,12 +29,8 @@ class MailSmtp:
         msg.attach(MIMEText(html,'html'))
         # Try to log in to server smtp
         try:
-            if cls._USE_SSL == 'true':
-                server = smtplib.SMTP_SSL(cls._SMTP_SERVER,cls._PORT)
-            else:
-                server = smtplib.SMTP(cls._SMTP_SERVER,cls._PORT)
-                context = ssl.create_default_context()
-                server.starttls(context=context)
+            if cls._USE_SSL == 'true': server = smtplib.SMTP_SSL(cls._SMTP_SERVER,cls._PORT)
+            else: server = smtplib.SMTP(cls._SMTP_SERVER,cls._PORT)
         except smtplib.SMTPException as e:
             raise MailSmtpException(e)
 
