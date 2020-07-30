@@ -75,7 +75,7 @@ class PropertySchema(Schema):
 
     @validates('youtube')
     def validate_youtube(self,value):
-        if not match(r"http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?=]*)?",value):
+        if not match(r"(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\-_]+)",value):
             raise ValidationError('Invalid youtube format.')
 
     @validates('facility')
