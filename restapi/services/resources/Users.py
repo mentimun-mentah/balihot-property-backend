@@ -235,3 +235,14 @@ class UpdateAccount(Resource):
         user.change_update_time()
         user.save_to_db()
         return {"message":"Success update your account."}, 200
+
+class GetUser(Resource):
+    @jwt_required
+    def get(self):
+        _user_schema = UserSchema(only=("username","email","avatar","password"))
+        user = User.query.get(get_jwt_identity())
+        data = _user_schema.dump(user)
+        data['old_password'] = True if data['password'] else False
+        data['admin'] = True if user.role == 2 else False
+        data.pop('password',None)
+        return data, 200

@@ -447,6 +447,16 @@ class UserTest(BaseTest):
             self.assertEqual(400,res.status_code)
             self.assertListEqual(["The username has already been taken."],json.loads(res.data)['username'])
 
+    def test_36_get_data_current_user(self):
+        with self.app() as client:
+            res = client.get('/user',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(200,res.status_code)
+            self.assertIn("avatar",json.loads(res.data))
+            self.assertIn("username",json.loads(res.data))
+            self.assertIn("email",json.loads(res.data))
+            self.assertIn("admin",json.loads(res.data))
+            self.assertIn("old_password",json.loads(res.data))
+
     def test_99_delete_user_from_db(self):
         user = User.query.filter_by(email=self.EMAIL_TEST).first()
         # delete avatar user

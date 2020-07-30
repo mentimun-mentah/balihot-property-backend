@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, jwt_optional, get_jwt_identity
+from services.models.UserModel import User
 from services.models.TypeModel import Type
 from services.models.VisitModel import Visit
 from services.models.FacilityModel import Facility
@@ -215,6 +216,7 @@ class DeleteImageProperty(Resource):
         return {"message":"Success delete image."}, 200
 
 class AllProperties(Resource):
+    @jwt_optional
     def get(self):
         per_page = request.args.get('per_page',default=10,type=int)
         page = request.args.get('page',default=1,type=int)
@@ -256,6 +258,10 @@ class AllProperties(Resource):
         properties = Property.search_properties(per_page=per_page,page=page,**args)
         data = _property_schema.dump(properties.items,many=True)
 
+        if (current_user := get_jwt_identity()):
+            for property_db in data:
+                property_db['love'] = True if User.check_wishlist(property_db['id'],current_user) else False
+
         results = dict(
             data = data,
             total = properties.total,
@@ -268,6 +274,7 @@ class AllProperties(Resource):
         return results, 200
 
 class GetPropertySlug(Resource):
+    @jwt_optional
     def get(self,slug: str):
         property_db = Property.filter_by_slug(slug)
         # set visit if ip not found
@@ -278,4 +285,22 @@ class GetPropertySlug(Resource):
         similar_listing = Property.load_similar_listing_random(type_id=property_db.type_id)
         data['similar_listing'] = _property_schema.dump(similar_listing,many=True)
 
+        if (current_user := get_jwt_identity()):
+            data['love'] = True if User.check_wishlist(data['id'],current_user) else False
+
         return data, 200
+
+class SearchPropertyByLocation(Resource):
+    def get(self):
+        _property_location_schema = PropertySchema(only=("name",))
+        type_id = request.args.get('type_id',default=None,type=int)
+        q = request.args.get('q',default=None,type=str)
+        if not Type.query.get(type_id):
+            return {"message":"Type not found"}, 404
+
+        if q:
+            properties = Property.search_by_location(type_id,q)
+        else:
+            properties = []
+
+        return _property_location_schema.dump(properties,many=True), 200

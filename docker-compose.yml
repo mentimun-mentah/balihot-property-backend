@@ -12,7 +12,7 @@ services:
       - "./restapi:/app"
       - "/app/migrations"
     ports: 
-      - "192.168.18.77:5001:5000"
+      - "192.168.18.91:5001:5000"
     depends_on: 
       - postgres
       - pgadmin4
@@ -26,7 +26,7 @@ services:
   pgadmin4:
     image: "dpage/pgadmin4"
     ports: 
-      - "192.168.18.77:5437:80"
+      - "192.168.18.91:5437:80"
     environment:
       - PGADMIN_DEFAULT_EMAIL=oman@balihotproperty.com
       - PGADMIN_DEFAULT_PASSWORD=123

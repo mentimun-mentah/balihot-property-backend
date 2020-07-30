@@ -1,6 +1,11 @@
 from services.serve import db, bcrypt
 from datetime import datetime
 
+Wishlist = db.Table('wishlists',
+           db.Column('id',db.Integer,primary_key=True),
+           db.Column('property_id',db.Integer,db.ForeignKey('properties.id',ondelete='cascade'),nullable=False),
+           db.Column('user_id',db.Integer,db.ForeignKey('users.id',ondelete='cascade'),nullable=False))
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -14,6 +19,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime,default=datetime.now)
 
     confirmation = db.relationship('Confirmation',backref='user',uselist=False,cascade='all,delete-orphan')
+    wishlists = db.relationship('Property',secondary=Wishlist,backref=db.backref('user_wishlists'))
 
     def __init__(self,**args):
         self.username = args['username']
@@ -22,6 +28,33 @@ class User(db.Model):
             self.avatar = args['avatar']
         if 'password' in args:
             self.password = bcrypt.generate_password_hash(args['password']).decode("utf-8")
+
+    @classmethod
+    def check_wishlist(cls,property_id: int, user_id: int) -> Wishlist:
+        return db.session.query(Wishlist) \
+            .filter(Wishlist.c.property_id == property_id, Wishlist.c.user_id == user_id) \
+            .first()
+
+    def get_wishlist_property(self,per_page: int, page: int, **args) -> Wishlist:
+        from services.models.PropertyModel import Property
+        from sqlalchemy import or_
+
+        stmt = db.session.query(Wishlist).join(Property)
+        if (type_id := args['type_id']):
+            stmt = stmt.filter(Property.type_id == type_id)
+        if (status := args['status']):
+            filters = [Property.status.like(f"%{x}%") for x in status.split(',')]
+            stmt = stmt.filter(or_(*filters))
+
+        properties = stmt.paginate(page,per_page,error_out=False)
+        return properties
+
+    def delete_wishlist(self,property_id: int) -> None:
+        for index,value in enumerate(self.wishlists):
+            if value.id == property_id:
+                self.wishlists.pop(index)
+
+        db.session.commit()
 
     def change_update_time(self) -> "User":
         self.updated_at = datetime.now()
