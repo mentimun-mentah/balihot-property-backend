@@ -5,7 +5,6 @@ from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from services.config import Development
 from dotenv import load_dotenv
 from marshmallow import ValidationError
 from redis import Redis
@@ -13,8 +12,10 @@ from os import getenv
 
 load_dotenv()
 
+from services.config import Production
+
 app = Flask(__name__)
-app.config.from_object(Development)
+app.config.from_object(Production)
 
 CORS(app)
 db = SQLAlchemy(app)
@@ -55,7 +56,7 @@ if app.debug:
                 'SQL Queries - {0} Queries Executed in {1}ms'.format(len(queries), round(total_duration * 1000, 2)),
                 flush=True
             )
-            print('=' * 80, flush=True)
+            print('=' * 80,flush=True)
             print(query_str.rstrip('\n'),flush=True)
             print('=' * 80,flush=True)
 

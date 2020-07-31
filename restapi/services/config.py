@@ -1,10 +1,10 @@
-import os
+from os import getenv
 
 class Config:
     DEBUG = False
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    SECRET_KEY = getenv('SECRET_KEY')
+    JWT_SECRET_KEY = getenv('JWT_SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = getenv('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_ACCESS_TOKEN_EXPIRES = 15 * 60  # 15 minute
     JWT_REFRESH_TOKEN_EXPIRES = 30 * 86400  # 30 days
@@ -15,4 +15,4 @@ class Development(Config):
     DEBUG = True
 
 class Production(Config):
-    DEBUG = False
+    PROPAGATE_EXCEPTIONS = True
