@@ -75,7 +75,7 @@ class WishlistTest(BaseTest):
         with self.app() as client:
             res = client.get('/wishlist/user',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(200,res.status_code)
-            self.assertNotEqual({},json.loads(res.data))
+            self.assertNotEqual([],json.loads(res.data))
 
     def test_06_love_property_already_in_wishlist(self):
         property_db = Property.query.filter_by(name=self.NAME).first()

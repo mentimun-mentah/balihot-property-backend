@@ -292,7 +292,7 @@ class GetPropertySlug(Resource):
 
 class SearchPropertyByLocation(Resource):
     def get(self):
-        _property_location_schema = PropertySchema(only=("name",))
+        _property_location_schema = PropertySchema(only=("location",))
         type_id = request.args.get('type_id',default=None,type=int)
         q = request.args.get('q',default=None,type=str)
         if not Type.query.get(type_id):
@@ -303,4 +303,6 @@ class SearchPropertyByLocation(Resource):
         else:
             properties = []
 
-        return _property_location_schema.dump(properties,many=True), 200
+        data = _property_location_schema.dump(properties,many=True)
+
+        return [dict(i) for i in {tuple(x.items()) for x in data}], 200
