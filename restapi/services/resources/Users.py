@@ -86,7 +86,7 @@ class LoginUser(Resource):
         data = request.get_json()
         args = _user_schema.load(data)
         user = User.query.filter_by(email=args['email']).first()
-        if user and user.check_pass(args['password']):
+        if user and user.password and user.check_pass(args['password']):
             if user.confirmation.activated:
                 access_token = create_access_token(identity=user.id,fresh=True)
                 refresh_token = create_refresh_token(identity=user.id)
