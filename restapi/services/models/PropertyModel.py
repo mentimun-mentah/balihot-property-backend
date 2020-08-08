@@ -96,9 +96,12 @@ class Property(db.Model):
         return db.session.query(func.count(cls.id)).scalar()
 
     @classmethod
-    def search_by_location(cls,type_id: int, q: str) -> "Property":
-        return cls.query.filter(cls.type_id == type_id, cls.location.like('%' + q + '%')) \
-            .limit(20).all()
+    def search_by_location(cls,**kwargs) -> "Property":
+        if 'type_id' in kwargs:
+            return cls.query.filter(cls.type_id == kwargs['type_id'], cls.location.like('%' + kwargs['q'] + '%')) \
+                .limit(20).all()
+        else:
+            return cls.query.filter(cls.location.like('%' + kwargs['q'] + '%')).limit(20).all()
 
     @classmethod
     def filter_by_slug(cls,slug: str) -> "Property":

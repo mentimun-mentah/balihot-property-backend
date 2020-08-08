@@ -761,12 +761,12 @@ class PropertyTest(BaseTest):
     def test_18_search_property_by_location(self):
         # type not found
         with self.app() as client:
-            res = client.get('/property/search-by-location?type_id=99999')
+            res = client.get('/property/search-by-location?q=a&type_id=99999')
             self.assertEqual(404,res.status_code)
             self.assertEqual("Type not found",json.loads(res.data)['message'])
 
         with self.app() as client:
-            res = client.get('/property/search-by-location?type_id=2&q=a')
+            res = client.get('/property/search-by-location?q=a&type_id=2')
             self.assertEqual(200,res.status_code)
             self.assertNotEqual([],json.loads(res.data))
 

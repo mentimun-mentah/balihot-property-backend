@@ -295,11 +295,15 @@ class SearchPropertyByLocation(Resource):
         _property_location_schema = PropertySchema(only=("location",))
         type_id = request.args.get('type_id',default=None,type=int)
         q = request.args.get('q',default=None,type=str)
-        if not Type.query.get(type_id):
-            return {"message":"Type not found"}, 404
 
         if q:
-            properties = Property.search_by_location(type_id,q)
+            if type_id:
+                if not Type.query.get(type_id):
+                    return {"message":"Type not found"}, 404
+
+                properties = Property.search_by_location(q=q,type_id=type_id)
+            else:
+                properties = Property.search_by_location(q=q)
         else:
             properties = []
 
