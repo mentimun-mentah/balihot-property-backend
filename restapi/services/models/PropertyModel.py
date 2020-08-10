@@ -1,6 +1,19 @@
+import math
 from services.serve import db
 from datetime import datetime
 from sqlalchemy import func, or_, and_, orm
+from sqlalchemy.ext.hybrid import hybrid_method
+
+def gc_distance(lat1, lng1, lat2, lng2, math=math):
+    ang = math.acos(math.cos(math.radians(lat1)) *
+                    math.cos(math.radians(lat2)) *
+                    math.cos(math.radians(lng2) -
+                             math.radians(lng1)) +
+                    math.sin(math.radians(lat1)) *
+                    math.sin(math.radians(lat2)))
+
+    return 6371 * ang
+
 
 PropertyFacility = db.Table('property_facilities',
                     db.Column('id',db.Integer,primary_key=True),
@@ -92,10 +105,6 @@ class Property(db.Model):
         self.updated_at = datetime.now()
 
     @classmethod
-    def count_all_data(cls) -> int:
-        return db.session.query(func.count(cls.id)).scalar()
-
-    @classmethod
     def search_by_location(cls,**kwargs) -> "Property":
         if 'type_id' in kwargs:
             return cls.query.filter(cls.type_id == kwargs['type_id'], cls.location.like('%' + kwargs['q'] + '%')) \
@@ -115,160 +124,97 @@ class Property(db.Model):
             .order_by(func.random()) \
             .limit(5).all()
 
+    @hybrid_method
+    def distance(self, lat, lng):
+        return gc_distance(lat, lng, self.latitude, self.longitude)
+
+    @distance.expression
+    def distance(cls, lat, lng):
+        return gc_distance(lat, lng, cls.latitude, cls.longitude, math=func)
+
     @classmethod
     def search_properties(cls,per_page: int, page: int, **args) -> "Property":
         from services.models.FacilityModel import Facility
         from services.models.PropertyPriceModel import PropertyPrice
 
         if args['lat'] and args['lng'] and args['radius']:
-            preapre_stmt = db.session.query(
-                cls,(
-                    6371 * func.acos(func.cos(func.radians(args['lat'])) *
-                        func.cos(func.radians(cls.latitude)) *
-                        func.cos(func.radians(cls.longitude) - func.radians(args['lng'])) +
-                        func.sin(func.radians(args['lat'])) *
-                        func.sin(func.radians(cls.latitude))
-                    )
-                ).label('distance')
-            ).subquery()
-
-            location_alias = db.aliased(cls, preapre_stmt)
-            stmt = db.session.query(location_alias)
-
-            if (region_id := args['region_id']): stmt = stmt.filter(cls.region_id == region_id)
-            if (type_id := args['type_id']): stmt = stmt.filter(cls.type_id == type_id)
-            if (property_for := args['property_for']):
-                filters = [cls.property_for.like(f"%{x}%") for x in property_for.split(',')]
-                stmt = stmt.filter(or_(*filters))
-            if (period := args['period']):
-                filters = [cls.period.like(f"%{x}%") for x in period.split(',')]
-                stmt = stmt.filter(or_(*filters))
-            if (status := args['status']):
-                filters = [cls.status.like(f"%{x}%") for x in status.split(',')]
-                stmt = stmt.filter(or_(*filters))
-            if (hotdeal := args['hotdeal']):
-                if hotdeal == 'true':
-                    stmt = stmt.filter(cls.hotdeal.is_(True))
-            if (bedroom := args['bedroom']):
-                stmt = stmt.filter(cls.bedroom == bedroom)
-            if (bathroom := args['bathroom']):
-                stmt = stmt.filter(cls.bathroom == bathroom)
-            if (location := args['location']):
-                stmt = stmt.filter(cls.location.like(f"%{location}%"))
-            if (facility := args['facility']):
-                stmt = stmt.filter(cls.facilities.any(Facility.id.in_([x for x in facility.split(',')])))
-            if (min_price := args['min_price']) and (max_price := args['max_price']):
-                stmt = stmt.filter(
-                    cls.price.has(
-                        or_(
-                            and_(PropertyPrice.freehold_price >= min_price, PropertyPrice.freehold_price <= max_price),
-                            and_(PropertyPrice.leasehold_price >= min_price, PropertyPrice.leasehold_price <= max_price),
-                            and_(PropertyPrice.daily_price >= min_price, PropertyPrice.daily_price <= max_price),
-                            and_(PropertyPrice.weekly_price >= min_price, PropertyPrice.weekly_price <= max_price),
-                            and_(PropertyPrice.monthly_price >= min_price, PropertyPrice.monthly_price <= max_price),
-                            and_(PropertyPrice.annually_price >= min_price, PropertyPrice.annually_price <= max_price)
-                        )
-                    )
-                )
-            if (min_price := args['min_price']) and not args['max_price']:
-                stmt = stmt.filter(
-                    cls.price.has(
-                        or_(
-                            PropertyPrice.freehold_price >= min_price,
-                            PropertyPrice.leasehold_price >= min_price,
-                            PropertyPrice.daily_price >= min_price,
-                            PropertyPrice.weekly_price >= min_price,
-                            PropertyPrice.monthly_price >= min_price,
-                            PropertyPrice.annually_price >= min_price
-                        )
-                    )
-                )
-            if (max_price := args['max_price']) and not args['min_price']:
-                stmt = stmt.filter(
-                    cls.price.has(
-                        or_(
-                            PropertyPrice.freehold_price <= max_price,
-                            PropertyPrice.leasehold_price <= max_price,
-                            PropertyPrice.daily_price <= max_price,
-                            PropertyPrice.weekly_price <= max_price,
-                            PropertyPrice.monthly_price <= max_price,
-                            PropertyPrice.annually_price <= max_price
-                        )
-                    )
-                )
-
-            properties = stmt.options(orm.joinedload('facilities'),orm.joinedload('price')) \
-                .filter(preapre_stmt.c.distance <= args['radius']).order_by(preapre_stmt.c.distance) \
-                .paginate(page,per_page,error_out=False)
+            stmt = db.session.query(cls,cls.distance(args['lat'],args['lng']).label('distance'))
         else:
             stmt = db.session.query(cls)
 
-            if (region_id := args['region_id']): stmt = stmt.filter(cls.region_id == region_id)
-            if (type_id := args['type_id']): stmt = stmt.filter(cls.type_id == type_id)
-            if (property_for := args['property_for']):
-                filters = [cls.property_for.like(f"%{x}%") for x in property_for.split(',')]
-                stmt = stmt.filter(or_(*filters))
-            if (period := args['period']):
-                filters = [cls.period.like(f"%{x}%") for x in period.split(',')]
-                stmt = stmt.filter(or_(*filters))
-            if (status := args['status']):
-                filters = [cls.status.like(f"%{x}%") for x in status.split(',')]
-                stmt = stmt.filter(or_(*filters))
-            if (hotdeal := args['hotdeal']):
-                if hotdeal == 'true':
-                    stmt = stmt.filter(cls.hotdeal.is_(True))
-            if (bedroom := args['bedroom']):
-                stmt = stmt.filter(cls.bedroom == bedroom)
-            if (bathroom := args['bathroom']):
-                stmt = stmt.filter(cls.bathroom == bathroom)
-            if (location := args['location']):
-                stmt = stmt.filter(cls.location.like(f"%{location}%"))
-            if (facility := args['facility']):
-                stmt = stmt.filter(cls.facilities.any(Facility.id.in_([x for x in facility.split(',')])))
-            if (min_price := args['min_price']) and (max_price := args['max_price']):
-                stmt = stmt.filter(
-                    cls.price.has(
-                        or_(
-                            and_(PropertyPrice.freehold_price >= min_price, PropertyPrice.freehold_price <= max_price),
-                            and_(PropertyPrice.leasehold_price >= min_price, PropertyPrice.leasehold_price <= max_price),
-                            and_(PropertyPrice.daily_price >= min_price, PropertyPrice.daily_price <= max_price),
-                            and_(PropertyPrice.weekly_price >= min_price, PropertyPrice.weekly_price <= max_price),
-                            and_(PropertyPrice.monthly_price >= min_price, PropertyPrice.monthly_price <= max_price),
-                            and_(PropertyPrice.annually_price >= min_price, PropertyPrice.annually_price <= max_price)
-                        )
+        if (region_id := args['region_id']): stmt = stmt.filter(cls.region_id == region_id)
+        if (type_id := args['type_id']): stmt = stmt.filter(cls.type_id == type_id)
+        if (property_for := args['property_for']):
+            filters = [cls.property_for.like(f"%{x}%") for x in property_for.split(',')]
+            stmt = stmt.filter(or_(*filters))
+        if (period := args['period']):
+            filters = [cls.period.like(f"%{x}%") for x in period.split(',')]
+            stmt = stmt.filter(or_(*filters))
+        if (status := args['status']):
+            filters = [cls.status.like(f"%{x}%") for x in status.split(',')]
+            stmt = stmt.filter(or_(*filters))
+        if (hotdeal := args['hotdeal']):
+            if hotdeal == 'true':
+                stmt = stmt.filter(cls.hotdeal.is_(True))
+        if (bedroom := args['bedroom']):
+            stmt = stmt.filter(cls.bedroom == bedroom)
+        if (bathroom := args['bathroom']):
+            stmt = stmt.filter(cls.bathroom == bathroom)
+        if (location := args['location']):
+            stmt = stmt.filter(cls.location.like(f"%{location}%"))
+        if (facility := args['facility']):
+            stmt = stmt.filter(cls.facilities.any(Facility.id.in_([x for x in facility.split(',')])))
+        if (min_price := args['min_price']) and (max_price := args['max_price']):
+            stmt = stmt.filter(
+                cls.price.has(
+                    or_(
+                        and_(PropertyPrice.freehold_price >= min_price, PropertyPrice.freehold_price <= max_price),
+                        and_(PropertyPrice.leasehold_price >= min_price, PropertyPrice.leasehold_price <= max_price),
+                        and_(PropertyPrice.daily_price >= min_price, PropertyPrice.daily_price <= max_price),
+                        and_(PropertyPrice.weekly_price >= min_price, PropertyPrice.weekly_price <= max_price),
+                        and_(PropertyPrice.monthly_price >= min_price, PropertyPrice.monthly_price <= max_price),
+                        and_(PropertyPrice.annually_price >= min_price, PropertyPrice.annually_price <= max_price)
                     )
                 )
-            if (min_price := args['min_price']) and not args['max_price']:
-                stmt = stmt.filter(
-                    cls.price.has(
-                        or_(
-                            PropertyPrice.freehold_price >= min_price,
-                            PropertyPrice.leasehold_price >= min_price,
-                            PropertyPrice.daily_price >= min_price,
-                            PropertyPrice.weekly_price >= min_price,
-                            PropertyPrice.monthly_price >= min_price,
-                            PropertyPrice.annually_price >= min_price
-                        )
+            )
+        if (min_price := args['min_price']) and not args['max_price']:
+            stmt = stmt.filter(
+                cls.price.has(
+                    or_(
+                        PropertyPrice.freehold_price >= min_price,
+                        PropertyPrice.leasehold_price >= min_price,
+                        PropertyPrice.daily_price >= min_price,
+                        PropertyPrice.weekly_price >= min_price,
+                        PropertyPrice.monthly_price >= min_price,
+                        PropertyPrice.annually_price >= min_price
                     )
                 )
-            if (max_price := args['max_price']) and not args['min_price']:
-                stmt = stmt.filter(
-                    cls.price.has(
-                        or_(
-                            PropertyPrice.freehold_price <= max_price,
-                            PropertyPrice.leasehold_price <= max_price,
-                            PropertyPrice.daily_price <= max_price,
-                            PropertyPrice.weekly_price <= max_price,
-                            PropertyPrice.monthly_price <= max_price,
-                            PropertyPrice.annually_price <= max_price
-                        )
+            )
+        if (max_price := args['max_price']) and not args['min_price']:
+            stmt = stmt.filter(
+                cls.price.has(
+                    or_(
+                        PropertyPrice.freehold_price <= max_price,
+                        PropertyPrice.leasehold_price <= max_price,
+                        PropertyPrice.daily_price <= max_price,
+                        PropertyPrice.weekly_price <= max_price,
+                        PropertyPrice.monthly_price <= max_price,
+                        PropertyPrice.annually_price <= max_price
                     )
                 )
+            )
 
-            properties = stmt.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+        if args['lat'] and args['lng'] and args['radius']:
+            stmt = stmt.subquery()
+            location_alias = db.aliased(cls, stmt)
+            stmt_result = db.session.query(location_alias)
+
+            return stmt_result.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+                .filter(stmt.c.distance <= args['radius']).order_by(stmt.c.distance) \
                 .paginate(page,per_page,error_out=False)
-
-        return properties
+        else:
+            return stmt.options(orm.joinedload('facilities'),orm.joinedload('price')) \
+                .paginate(page,per_page,error_out=False)
 
     def delete_facilities(self) -> None:
         self.facilities = []

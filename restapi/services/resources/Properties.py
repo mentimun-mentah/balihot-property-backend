@@ -264,7 +264,7 @@ class AllProperties(Resource):
 
         results = dict(
             data = data,
-            total = Property.count_all_data(),
+            total = properties.total,
             next_num = properties.next_num,
             prev_num = properties.prev_num,
             page = properties.page,
@@ -287,6 +287,8 @@ class GetPropertySlug(Resource):
 
         if (current_user := get_jwt_identity()):
             data['love'] = True if User.check_wishlist(data['id'],current_user) else False
+            for similar_listing in data['similar_listing']:
+                similar_listing['love'] = True if User.check_wishlist(similar_listing['id'],current_user) else False
 
         return data, 200
 

@@ -39,7 +39,7 @@ class User(db.Model):
         from services.models.PropertyModel import Property
         from sqlalchemy import or_
 
-        stmt = db.session.query(Wishlist).join(Property)
+        stmt = db.session.query(Wishlist).filter(Wishlist.c.user_id == self.id).join(Property)
         if (type_id := args['type_id']):
             stmt = stmt.filter(Property.type_id == type_id)
         if (status := args['status']):
