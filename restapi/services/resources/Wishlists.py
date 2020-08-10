@@ -46,9 +46,6 @@ class UserWishlist(Resource):
         data_property = [Property.query.get(x) for x in [j[1] for j in properties.items]]
         data = _property_schema.dump(data_property,many=True)
 
-        for property_db in data:
-            property_db['love'] = True if User.check_wishlist(property_db['id'],user.id) else False
-
         results = dict(
             data = data,
             next_num = properties.next_num,
