@@ -54,3 +54,7 @@ services:
     image: "redis"
     sysctls:
       - net.core.somaxconn=511
+
+networks:
+  default:
+    name: restapi_networks
