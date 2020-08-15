@@ -43,6 +43,8 @@ api.add_resource(Facilities.AllFacility,'/facilities')
 api.add_resource(Facilities.CreateFacility,'/facility/create')
 api.add_resource(Facilities.GetUpdateDeleteFacility,'/facility/crud/<int:id>')
 
+api.add_resource(Types.CreateType,'/type/create')
+api.add_resource(Types.GetUpdateDeleteType,'/type/crud/<int:id>')
 api.add_resource(Types.AllType,'/types')
 
 api.add_resource(Properties.AllProperties,'/properties')
@@ -55,6 +57,7 @@ api.add_resource(Properties.SearchPropertyByLocation,'/property/search-by-locati
 api.add_resource(Wishlists.UserWishlist,'/wishlist/user')
 api.add_resource(Wishlists.LoveProperty,'/wishlist/love/<int:property_id>')
 api.add_resource(Wishlists.UnloveProperty,'/wishlist/unlove/<int:property_id>')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
