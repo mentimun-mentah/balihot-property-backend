@@ -4,7 +4,6 @@ services:
     build: 
       context: ./restapi
       dockerfile: Dockerfile
-    command: gunicorn -w 4 -b 0.0.0.0:5000 app:app
     restart: always
     environment:
       - REDIS_DB_HOST=redis-server
