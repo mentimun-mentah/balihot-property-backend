@@ -20,6 +20,8 @@ class MagicImage:
         self.path_upload = path_upload
         if 'dir_name' in kwargs:
             self.dir_name = kwargs['dir_name']
+        if 'watermark' in kwargs:
+            self.watermark = kwargs['watermark']
 
     def _crop_center(self,pil_img: TextIO, crop_width: int, crop_height: int) -> TextIO:
         img_width, img_height = pil_img.size
@@ -58,12 +60,40 @@ class MagicImage:
             img = self._remove_exif_tag(img)
             # flip image to right path
             img = ImageOps.exif_transpose(img)
+            # if watermark exists set watermark
+            if hasattr(self,'watermark'):
+                img = self._set_watermark(img)
+
             if 'path' in kwargs:
                 img.save(os.path.join(kwargs['path'],filename))
             else:
                 img.save(os.path.join(self._BASE_DIR,self.path_upload,filename))
 
         return filename
+
+    def _set_watermark(self,image: TextIO) -> TextIO:
+        check = ['center','topleft','topright','bottomleft','bottomright']
+        if self.watermark not in check:
+            raise ValueError("Param watermark must be between {}".format(', '.join(check)))
+
+        imageWidth, imageHeight = image.size
+
+        watermark = os.path.join(self._BASE_DIR,'watermark.png')
+        if os.path.exists(watermark):
+            with Image.open(watermark) as logo:
+                logoWidth, logoHeight = logo.size
+                if self.watermark == 'center':
+                    image.paste(logo,(int((imageWidth - logoWidth) / 2), int((imageHeight - logoHeight) / 2)),logo)
+                if self.watermark == 'topleft':
+                    image.paste(logo, (0, 0), logo)
+                if self.watermark == 'topright':
+                    image.paste(logo, (imageWidth - logoWidth, 0), logo)
+                if self.watermark == 'bottomleft':
+                    image.paste(logo, (0, imageHeight - logoHeight), logo)
+                if self.watermark == 'bottomright':
+                    image.paste(logo, (imageWidth - logoWidth, imageHeight - logoHeight), logo)
+
+        return image
 
     def save_image(self) -> 'MagicImage':
         if isinstance(self.file,dict):

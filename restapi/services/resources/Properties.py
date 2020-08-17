@@ -97,7 +97,7 @@ class CreateProperty(Resource):
         # save images
         slug = slugify(data['name'])
         magic_image = MagicImage(file=files['images'],width=1144,height=763,path_upload='properties/',
-            square=False,dir_name=slug)
+            square=False,dir_name=slug,watermark='center')
         magic_image.save_image()
         images = ','.join(magic_image.FILE_NAME.values())
         # save data to db
@@ -151,7 +151,7 @@ class GetUpdateDeleteProperty(Resource):
         if files:
             # save to storage
             magic_image = MagicImage(file=files['images'],width=1144,height=763,path_upload='properties/',
-                    square=False,dir_name=slug)
+                    square=False,dir_name=slug,watermark='center')
             magic_image.save_image()
             images = ','.join(magic_image.FILE_NAME.values())
             # save to db
