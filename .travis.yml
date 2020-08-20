@@ -11,6 +11,7 @@ env:
     - SMTP_USE_SSL=true
     - SMTP_EMAIL=balihottest2020@gmail.com
     - SMTP_PASSWORD=2020testbalihot
+    - EMAIL_ENQUIRY=balihottest2020@gmail.com
     - REDIS_DB_HOST=localhost
     - SQLALCHEMY_DATABASE_URI=postgresql://balihotproperty:123@localhost/balihotproperty
 language: python
