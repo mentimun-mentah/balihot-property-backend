@@ -24,7 +24,7 @@ class WishlistTest(BaseTest):
 
         with self.app() as client:
             res = client.post('/region/create',content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name': self.NAME},
+                data={'image': (img,'image.jpg'),'name': self.NAME,'description':'asdasd'},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(201,res.status_code)
             self.assertEqual("Success add region.",json.loads(res.data)['message'])
