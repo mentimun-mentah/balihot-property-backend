@@ -64,13 +64,14 @@ class RegionTest(BaseTest):
         with open(os.path.join(self.DIR_IMAGE,'image.jpg'),'rb') as im:
             img = io.BytesIO(im.read())
 
-        # name blank
+        # name, description blank
         with self.app() as client:
             res = client.post('/region/create',content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name':''},
+                data={'image': (img,'image.jpg'),'name':'','description':''},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(["Length must be between 3 and 100."],json.loads(res.data)['name'])
+            self.assertListEqual(['Shorter than minimum length 3.'],json.loads(res.data)['description'])
 
     def test_02_create_region(self):
         with open(os.path.join(self.DIR_IMAGE,'image.jpg'),'rb') as im:
@@ -78,7 +79,7 @@ class RegionTest(BaseTest):
 
         with self.app() as client:
             res = client.post('/region/create',content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name': self.NAME},
+                data={'image': (img,'image.jpg'),'name': self.NAME,'description':'asdasd'},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(201,res.status_code)
             self.assertEqual("Success add region.",json.loads(res.data)['message'])
@@ -89,7 +90,7 @@ class RegionTest(BaseTest):
 
         with self.app() as client:
             res = client.post('/region/create',content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name': self.NAME},
+                data={'image': (img,'image.jpg'),'name': self.NAME,'description':'asdasd'},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(['The name has already been taken.'],json.loads(res.data)['name'])
@@ -116,6 +117,7 @@ class RegionTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertIn("id",json.loads(res.data).keys())
             self.assertIn("name",json.loads(res.data).keys())
+            self.assertIn("description",json.loads(res.data).keys())
             self.assertIn("image",json.loads(res.data).keys())
 
     def test_05_validation_update_region(self):
@@ -139,9 +141,10 @@ class RegionTest(BaseTest):
         with self.app() as client:
             res = client.put('/region/crud/{}'.format(region.id),content_type=self.content_type,
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"},
-                data={'image':'','name':''})
+                data={'image':'','name':'','description':''})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(["Length must be between 3 and 100."],json.loads(res.data)['name'])
+            self.assertListEqual(['Shorter than minimum length 3.'],json.loads(res.data)['description'])
 
         # check dangerous file
         with self.app() as client:
@@ -179,7 +182,7 @@ class RegionTest(BaseTest):
 
         with self.app() as client:
             res = client.put('/region/crud/{}'.format(region.id),content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name': self.NAME_2},
+                data={'image': (img,'image.jpg'),'name': self.NAME_2,'description':'asdasd'},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success update region.",json.loads(res.data)['message'])
@@ -190,7 +193,7 @@ class RegionTest(BaseTest):
 
         with self.app() as client:
             res = client.post('/region/create',content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name': self.NAME},
+                data={'image': (img,'image.jpg'),'name': self.NAME,'description':'asdasd'},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(201,res.status_code)
             self.assertEqual("Success add region.",json.loads(res.data)['message'])
@@ -203,7 +206,7 @@ class RegionTest(BaseTest):
 
         with self.app() as client:
             res = client.put('/region/crud/{}'.format(region.id),content_type=self.content_type,
-                data={'image': (img,'image.jpg'),'name': self.NAME},
+                data={'image': (img,'image.jpg'),'name': self.NAME,'description':'asdasd'},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
             self.assertListEqual(["The name has already been taken."],json.loads(res.data)['name'])
