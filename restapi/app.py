@@ -6,7 +6,9 @@ from services.resources import (
     Facilities,
     Properties,
     Types,
-    Wishlists
+    Wishlists,
+    Dashboard,
+    EmailEnquiry
 )
 from services.libs import OAuth2
 
@@ -57,6 +59,12 @@ api.add_resource(Properties.SearchPropertyByLocation,'/property/search-by-locati
 api.add_resource(Wishlists.UserWishlist,'/wishlist/user')
 api.add_resource(Wishlists.LoveProperty,'/wishlist/love/<int:property_id>')
 api.add_resource(Wishlists.UnloveProperty,'/wishlist/unlove/<int:property_id>')
+
+api.add_resource(Dashboard.GetTotalVisitor,'/dashboard/total-visitor')
+api.add_resource(Dashboard.GetVisitorProperties,'/dashboard/visitor-properties')
+api.add_resource(Dashboard.GetLovedProperties,'/dashboard/loved-properties')
+
+api.add_resource(EmailEnquiry.SendEmailEnquiry,'/send-email-enquiry')
 
 
 if __name__ == '__main__':

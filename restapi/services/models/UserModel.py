@@ -1,5 +1,7 @@
 from services.serve import db, bcrypt
 from datetime import datetime
+from typing import List, Tuple
+from sqlalchemy import func, desc, or_
 
 Wishlist = db.Table('wishlists',
            db.Column('id',db.Integer,primary_key=True),
@@ -35,9 +37,16 @@ class User(db.Model):
             .filter(Wishlist.c.property_id == property_id, Wishlist.c.user_id == user_id) \
             .first()
 
+    @classmethod
+    def loved_properties(cls,limit: int) -> List[Tuple[int,int]]:
+        return db.session.query(Wishlist.c.property_id.label('wishlist_id'),
+            func.count(Wishlist.c.property_id).label('count_total')) \
+            .group_by('wishlist_id') \
+            .order_by(desc('count_total')) \
+            .limit(limit).all()
+
     def get_wishlist_property(self,per_page: int, page: int, **args) -> Wishlist:
         from services.models.PropertyModel import Property
-        from sqlalchemy import or_
 
         stmt = db.session.query(Wishlist).filter(Wishlist.c.user_id == self.id).join(Property)
         if (type_id := args['type_id']):

@@ -38,7 +38,6 @@ class BaseTest(unittest.TestCase):
             res = client.post('/register',json={'username': username,
                 'email': email,'password':'asdasd',
                 'confirm_password':'asdasd'})
-            print(res.data)
             self.assertEqual(201,res.status_code)
             self.assertEqual('Check your email to activated user.',json.loads(res.data)['message'])
 

@@ -1,6 +1,7 @@
 from services.serve import db
 from datetime import datetime
-from sqlalchemy import func
+from typing import Dict, Tuple, List
+from sqlalchemy import func, desc
 
 class Visit(db.Model):
     __tablename__ = 'visits'
@@ -30,6 +31,31 @@ class Visit(db.Model):
         return db.session.query(func.count(cls.id)) \
             .filter(cls.visitable_id == visit_id, cls.visitable_type == visit_type) \
             .scalar()
+
+    @classmethod
+    def total_visitors(cls,year: int) -> Dict[str,int]:
+        import datetime, calendar
+
+        year = year or datetime.datetime.now().year
+
+        visitors = dict()
+
+        for month in range(1,13):
+            num_days = calendar.monthrange(year, month)[1]
+            start_date = datetime.date(year, month, 1)
+            end_date = datetime.date(year, month, num_days)
+            visitors[calendar.month_name[month]] = db.session.query(func.count(cls.id)) \
+                .filter(cls.created_at >= start_date, cls.created_at <= end_date) \
+                .scalar()
+
+        return visitors
+
+    @classmethod
+    def visit_popular_by(cls,visit_type: str, limit: int) -> List[Tuple[int,int]]:
+        return db.session.query(cls.visitable_id.label('visit_id'),func.count(cls.visitable_id).label('count_total')) \
+            .group_by('visit_id') \
+            .order_by(desc('count_total')) \
+            .filter(cls.visitable_type == visit_type).limit(limit).all()
 
     def save_to_db(self) -> None:
         db.session.add(self)
