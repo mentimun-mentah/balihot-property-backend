@@ -22,7 +22,7 @@ class CreateRegion(Resource):
 
         magic_image = MagicImage(file=file['image'],width=2000,height=3000,path_upload='regions/',square=False)
         magic_image.save_image()
-        region = Region(image=magic_image.FILE_NAME,name=data['name'])
+        region = Region(image=magic_image.FILE_NAME,name=data['name'],description=data['description'])
         region.save_to_db()
         return {"message":"Success add region."}, 201
 
@@ -51,6 +51,7 @@ class GetUpdateDeleteRegion(Resource):
             region.image = magic_image.FILE_NAME
 
         region.name = data['name']
+        region.description = data['description']
         region.save_to_db()
         return {"message":"Success update region."}, 200
 
