@@ -5,3 +5,4 @@ class RegionSchema(Schema):
     name = fields.Str(required=True,validate=validate.Length(min=3,max=100))
     description = fields.Str(required=True,validate=validate.Length(min=3))
     image = fields.Str(dump_only=True)
+    slug = fields.Str(dump_only=True)

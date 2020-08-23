@@ -119,6 +119,7 @@ class RegionTest(BaseTest):
             self.assertIn("name",json.loads(res.data).keys())
             self.assertIn("description",json.loads(res.data).keys())
             self.assertIn("image",json.loads(res.data).keys())
+            self.assertIn("slug",json.loads(res.data).keys())
 
     def test_05_validation_update_region(self):
         self.login(self.EMAIL_TEST_2)
@@ -218,7 +219,28 @@ class RegionTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertNotEqual([],json.loads(res.data))
 
-    def test_10_validation_delete_region(self):
+    def test_10_get_region_by_slug(self):
+        # note this endpoint is public data
+        # region not found
+        with self.app() as client:
+            res = client.get('/region/ngawur')
+            self.assertEqual(404,res.status_code)
+            self.assertEqual("Region not found",json.loads(res.data)['message'])
+
+        region = Region.query.filter_by(name=self.NAME).first()
+
+        with self.app() as client:
+            res = client.get('/region/{}'.format(region.slug))
+            self.assertEqual(200,res.status_code)
+            self.assertIn("id",json.loads(res.data).keys())
+            self.assertIn("name",json.loads(res.data).keys())
+            self.assertIn("slug",json.loads(res.data).keys())
+            self.assertIn("image",json.loads(res.data).keys())
+            self.assertIn("description",json.loads(res.data).keys())
+            self.assertIn("listing",json.loads(res.data).keys())
+            self.assertIn("another_region",json.loads(res.data).keys())
+
+    def test_11_validation_delete_region(self):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
@@ -233,7 +255,7 @@ class RegionTest(BaseTest):
             self.assertEqual(404,res.status_code)
             self.assertEqual("Region not found",json.loads(res.data)['message'])
 
-    def test_11_delete_region_one(self):
+    def test_12_delete_region_one(self):
         region = Region.query.filter_by(name=self.NAME).first()
 
         with self.app() as client:
@@ -241,7 +263,7 @@ class RegionTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success delete region.",json.loads(res.data)['message'])
 
-    def test_12_delete_region_two(self):
+    def test_13_delete_region_two(self):
         region = Region.query.filter_by(name=self.NAME_2).first()
 
         with self.app() as client:

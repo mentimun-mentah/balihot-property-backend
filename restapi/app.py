@@ -34,6 +34,7 @@ api.add_resource(Users.UpdateAvatar,'/account/update-avatar')
 api.add_resource(Users.UpdateAccount,'/account/update-account')
 
 api.add_resource(Regions.AllRegion,'/regions')
+api.add_resource(Regions.GetRegionSlug,'/region/<slug>')
 api.add_resource(Regions.CreateRegion,'/region/create')
 api.add_resource(Regions.GetUpdateDeleteRegion,'/region/crud/<int:id>')
 
