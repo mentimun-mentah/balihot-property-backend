@@ -22,7 +22,7 @@ class CreateRegion(Resource):
 
         magic_image = MagicImage(file=file['image'],width=2000,height=3000,path_upload='regions/',square=False)
         magic_image.save_image()
-        region = Region(image=magic_image.FILE_NAME,name=data['name'],description=data['description'])
+        region = Region(image=magic_image.FILE_NAME,**data)
         region.save_to_db()
         return {"message":"Success add region."}, 201
 
@@ -43,15 +43,15 @@ class GetUpdateDeleteRegion(Resource):
         if region.name != data['name'] and Region.query.filter_by(name=data['name']).first():
             raise ValidationError({'name':['The name has already been taken.']})
 
+        file_name = None
         if file:
             MagicImage.delete_image(file=region.image,path_delete='regions/')
             # save image
             magic_image = MagicImage(file=file['image'],width=2000,height=3000,path_upload='regions/',square=False)
             magic_image.save_image()
-            region.image = magic_image.FILE_NAME
+            file_name = magic_image.FILE_NAME
 
-        region.name = data['name']
-        region.description = data['description']
+        region.update_data_in_db(image=file_name,**data)
         region.save_to_db()
         return {"message":"Success update region."}, 200
 
@@ -71,4 +71,18 @@ class AllRegion(Resource):
             if listing == 'true':
                 for region in data:
                     region['listing'] = len(Region.query.get(region['id']).properties)
+        return data, 200
+
+class GetRegionSlug(Resource):
+    def get(self,slug: str):
+        region = Region.query.filter_by(slug=slug).first_or_404("Region not found")
+        data = _region_schema.dump(region)
+        data['listing'] = len(region.properties)
+
+        another_region = Region.query.all()
+        another_region_data = _region_schema.dump(another_region,many=True)
+        for another in another_region_data:
+            another['listing'] = len(Region.query.get(another['id']).properties)
+
+        data['another_region'] = another_region_data
         return data, 200

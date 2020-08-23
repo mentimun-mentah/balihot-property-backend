@@ -13,4 +13,3 @@ psycopg2-binary
 Pillow
 pytest
 redis
-gunicorn
