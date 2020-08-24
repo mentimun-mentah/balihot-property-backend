@@ -1,7 +1,7 @@
 import math
 from services.serve import db
 from datetime import datetime
-from sqlalchemy import func, or_, and_, orm
+from sqlalchemy import func, or_, and_, orm, desc
 from sqlalchemy.ext.hybrid import hybrid_method
 
 def gc_distance(lat1, lng1, lat2, lng2, math=math):
@@ -140,7 +140,7 @@ class Property(db.Model):
         if args['lat'] and args['lng'] and args['radius']:
             stmt = db.session.query(cls,cls.distance(args['lat'],args['lng']).label('distance'))
         else:
-            stmt = db.session.query(cls)
+            stmt = db.session.query(cls).order_by(desc(cls.id))
 
         if (region_id := args['region_id']): stmt = stmt.filter(cls.region_id == region_id)
         if (type_id := args['type_id']): stmt = stmt.filter(cls.type_id == type_id)
