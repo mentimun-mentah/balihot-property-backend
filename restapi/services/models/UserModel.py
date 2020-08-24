@@ -48,7 +48,8 @@ class User(db.Model):
     def get_wishlist_property(self,per_page: int, page: int, **args) -> Wishlist:
         from services.models.PropertyModel import Property
 
-        stmt = db.session.query(Wishlist).filter(Wishlist.c.user_id == self.id).join(Property)
+        stmt = db.session.query(Wishlist).filter(Wishlist.c.user_id == self.id).join(Property) \
+            .order_by(desc(Wishlist.c.id))
         if (type_id := args['type_id']):
             stmt = stmt.filter(Property.type_id == type_id)
         if (status := args['status']):

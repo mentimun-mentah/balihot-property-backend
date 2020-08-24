@@ -56,5 +56,5 @@ class GetUpdateDeleteFacility(Resource):
 
 class AllFacility(Resource):
     def get(self):
-        facilities = Facility.query.all()
+        facilities = Facility.query.order_by(Facility.id.desc()).all()
         return _facility_schema.dump(facilities,many=True), 200
