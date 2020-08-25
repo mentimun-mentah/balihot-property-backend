@@ -111,6 +111,15 @@ class WishlistTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual('Property not on wishlist',json.loads(res.data)['message'])
 
+    def test_97_delete_property(self):
+        property_db = Property.query.filter_by(name=self.NAME).first()
+
+        with self.app() as client:
+            res = client.delete('/property/crud/{}'.format(property_db.id),
+                headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(200,res.status_code)
+            self.assertEqual("Success delete property.",json.loads(res.data)['message'])
+
     def test_98_delete_region(self):
         region = Region.query.filter_by(name=self.NAME).first()
 

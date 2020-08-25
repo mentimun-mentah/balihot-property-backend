@@ -96,7 +96,7 @@ class CreateProperty(Resource):
             ValidateProperty.check_facility(data['facility'])
         # save images
         slug = slugify(data['name'])
-        magic_image = MagicImage(file=files['images'],width=1144,height=763,path_upload='properties/',
+        magic_image = MagicImage(file=files['images'],width=1200,height=800,path_upload='properties/',
             square=False,dir_name=slug,watermark='center')
         magic_image.save_image()
         images = ','.join(magic_image.FILE_NAME.values())
@@ -150,7 +150,7 @@ class GetUpdateDeleteProperty(Resource):
 
         if files:
             # save to storage
-            magic_image = MagicImage(file=files['images'],width=1144,height=763,path_upload='properties/',
+            magic_image = MagicImage(file=files['images'],width=1200,height=800,path_upload='properties/',
                     square=False,dir_name=slug,watermark='center')
             magic_image.save_image()
             images = ','.join(magic_image.FILE_NAME.values())

@@ -8,7 +8,8 @@ from services.resources import (
     Types,
     Wishlists,
     Dashboard,
-    EmailEnquiry
+    EmailEnquiry,
+    Newsletters
 )
 from services.libs import OAuth2
 
@@ -37,6 +38,9 @@ api.add_resource(Regions.AllRegion,'/regions')
 api.add_resource(Regions.GetRegionSlug,'/region/<slug>')
 api.add_resource(Regions.CreateRegion,'/region/create')
 api.add_resource(Regions.GetUpdateDeleteRegion,'/region/crud/<int:id>')
+
+api.add_resource(Newsletters.CreateNewsletter,'/newsletter/create')
+api.add_resource(Newsletters.GetUpdateDeleteNewsletter,'/newsletter/crud/<int:id>')
 
 api.add_resource(Teams.AllTeam,'/teams')
 api.add_resource(Teams.CreateTeam,'/team/create')
