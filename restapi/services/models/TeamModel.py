@@ -1,5 +1,5 @@
 from services.serve import db
-from datetime import datetime
+from sqlalchemy import func
 
 class Team(db.Model):
     __tablename__ = 'teams'
@@ -9,8 +9,8 @@ class Team(db.Model):
     name = db.Column(db.String(100),unique=True,index=True,nullable=False)
     title = db.Column(db.String(100),nullable=False)
     phone = db.Column(db.String(20),nullable=False)
-    created_at = db.Column(db.DateTime,default=datetime.now)
-    updated_at = db.Column(db.DateTime,default=datetime.now)
+    created_at = db.Column(db.DateTime,default=func.now())
+    updated_at = db.Column(db.DateTime,default=func.now())
 
     def __init__(self,**args):
         self.image = args['image']
@@ -19,7 +19,7 @@ class Team(db.Model):
         self.phone = args['phone']
 
     def change_update_time(self) -> "Team":
-        self.updated_at = datetime.now()
+        self.updated_at = func.now()
 
     def save_to_db(self) -> None:
         db.session.add(self)

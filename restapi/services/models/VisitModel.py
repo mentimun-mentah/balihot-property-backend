@@ -1,5 +1,4 @@
 from services.serve import db
-from datetime import datetime
 from typing import Dict, Tuple, List
 from sqlalchemy import func, desc
 
@@ -10,7 +9,7 @@ class Visit(db.Model):
     ip = db.Column(db.String(20),nullable=False)
     visitable_id = db.Column(db.Integer,nullable=False)
     visitable_type = db.Column(db.String(30),nullable=False)
-    created_at = db.Column(db.DateTime,default=datetime.now)
+    created_at = db.Column(db.DateTime,default=func.now())
 
     def __init__(self,ip: str, visitable_id: int, visitable_type: str):
         self.ip = ip

@@ -1,8 +1,8 @@
 import uuid, os
 from services.serve import db
 from time import time
-from datetime import datetime
 from flask import url_for
+from sqlalchemy import func
 from services.libs.MailSmtp import MailSmtp
 
 class PasswordReset(db.Model):
@@ -11,7 +11,7 @@ class PasswordReset(db.Model):
     id = db.Column(db.String(100),primary_key=True)
     email = db.Column(db.String(100),unique=True,index=True,nullable=False)
     resend_expired = db.Column(db.Integer,nullable=True)
-    created_at = db.Column(db.DateTime,default=datetime.now)
+    created_at = db.Column(db.DateTime,default=func.now())
 
     def __init__(self,email: str):
         self.email = email
