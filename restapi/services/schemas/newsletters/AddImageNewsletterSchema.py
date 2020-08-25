@@ -26,7 +26,7 @@ class ImageField(fields.Field):
         size = value.tell()
 
         if size > self._MAX_FILE_SIZE:
-            raise ValidationError("Image cannot grater than 4 Mb")
+            raise ValidationError("Image cannot grater than 6 Mb")
 
         value.seek(0)
         # return real image

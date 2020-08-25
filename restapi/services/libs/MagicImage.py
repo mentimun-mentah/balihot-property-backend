@@ -1,6 +1,6 @@
 import os, uuid, shutil
-from typing import TextIO, Union, Dict, List, Optional
 from PIL import Image, ImageOps
+from typing import TextIO, Union, Dict, List, Optional
 
 class MagicImage:
     FILE_NAME = None

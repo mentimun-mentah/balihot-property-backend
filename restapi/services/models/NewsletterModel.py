@@ -14,6 +14,22 @@ class Newsletter(db.Model):
     created_at = db.Column(db.DateTime,default=datetime.now)
     updated_at = db.Column(db.DateTime,default=datetime.now)
 
+    def __init__(self,**data):
+        self.title = data['title']
+        self.slug = data['slug']
+        self.image = data['image']
+        self.thumbnail = data['thumbnail']
+        self.description = data['description']
+
+    def update_data_in_db(self,**data) -> "Newsletter":
+        self.title = data['title']
+        self.slug = data['slug']
+        self.description = data['description']
+        if data['image']:
+            self.image = data['image']
+        if data['thumbnail']:
+            self.thumbnail = data['thumbnail']
+
     def change_update_time(self) -> "Newsletter":
         self.updated_at = datetime.now()
 
