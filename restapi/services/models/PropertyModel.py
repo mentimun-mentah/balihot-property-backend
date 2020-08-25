@@ -1,6 +1,5 @@
 import math
 from services.serve import db
-from datetime import datetime
 from sqlalchemy import func, or_, and_, orm, desc
 from sqlalchemy.ext.hybrid import hybrid_method
 
@@ -42,8 +41,8 @@ class Property(db.Model):
     location = db.Column(db.Text,nullable=False)
     latitude = db.Column(db.Float,nullable=False)
     longitude = db.Column(db.Float,nullable=False)
-    created_at = db.Column(db.DateTime,default=datetime.now)
-    updated_at = db.Column(db.DateTime,default=datetime.now)
+    created_at = db.Column(db.DateTime,default=func.now())
+    updated_at = db.Column(db.DateTime,default=func.now())
 
     type_id = db.Column(db.Integer,db.ForeignKey('types.id'),nullable=False)
     region_id = db.Column(db.Integer,db.ForeignKey('regions.id'),nullable=False)
@@ -102,7 +101,7 @@ class Property(db.Model):
             self.building_size = args['building_size']
 
     def change_update_time(self) -> "Property":
-        self.updated_at = datetime.now()
+        self.updated_at = func.now()
 
     @classmethod
     def search_by_location(cls,**kwargs) -> "Property":

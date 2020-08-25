@@ -21,6 +21,7 @@ services:
     image: "postgres"
     restart: always
     environment: 
+      - TZ=Asia/Kuala_Lumpur
       - POSTGRES_DB=balihotproperty
       - POSTGRES_USER=balihotproperty
       - POSTGRES_PASSWORD=123

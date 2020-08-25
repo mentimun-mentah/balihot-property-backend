@@ -1,5 +1,5 @@
 from services.serve import db
-from datetime import datetime
+from sqlalchemy import func
 
 class Newsletter(db.Model):
     __tablename__ = 'newsletters'
@@ -11,8 +11,8 @@ class Newsletter(db.Model):
     thumbnail = db.Column(db.String(100),nullable=False)
     description = db.Column(db.Text,nullable=False)
 
-    created_at = db.Column(db.DateTime,default=datetime.now)
-    updated_at = db.Column(db.DateTime,default=datetime.now)
+    created_at = db.Column(db.DateTime,default=func.now())
+    updated_at = db.Column(db.DateTime,default=func.now())
 
     def __init__(self,**data):
         self.title = data['title']
@@ -31,7 +31,7 @@ class Newsletter(db.Model):
             self.thumbnail = data['thumbnail']
 
     def change_update_time(self) -> "Newsletter":
-        self.updated_at = datetime.now()
+        self.updated_at = func.now()
 
     def save_to_db(self) -> None:
         db.session.add(self)

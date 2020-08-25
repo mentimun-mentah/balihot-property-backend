@@ -1,5 +1,4 @@
 from services.serve import db, bcrypt
-from datetime import datetime
 from typing import List, Tuple
 from sqlalchemy import func, desc, or_
 
@@ -17,8 +16,8 @@ class User(db.Model):
     password = db.Column(db.String(100),nullable=True)
     role = db.Column(db.Integer,default=1)
     avatar = db.Column(db.String(100),default='default.png')
-    created_at = db.Column(db.DateTime,default=datetime.now)
-    updated_at = db.Column(db.DateTime,default=datetime.now)
+    created_at = db.Column(db.DateTime,default=func.now())
+    updated_at = db.Column(db.DateTime,default=func.now())
 
     confirmation = db.relationship('Confirmation',backref='user',uselist=False,cascade='all,delete-orphan')
     wishlists = db.relationship('Property',secondary=Wishlist,backref=db.backref('user_wishlists'))
@@ -67,7 +66,7 @@ class User(db.Model):
         db.session.commit()
 
     def change_update_time(self) -> "User":
-        self.updated_at = datetime.now()
+        self.updated_at = func.now()
 
     def check_pass(self,password: str) -> bool:
         return bcrypt.check_password_hash(self.password,password)
