@@ -40,6 +40,7 @@ class PropertySchema(Schema):
     updated_at = fields.DateTime(dump_only=True)
     facilities = fields.List(fields.Nested("FacilitySchema"))
     price = fields.Nested("PropertyPriceSchema",exclude=("id",))
+    type = fields.Nested("TypeSchema",exclude=("id",))
 
     @validates('type_id')
     def validate_type_id(self,value):

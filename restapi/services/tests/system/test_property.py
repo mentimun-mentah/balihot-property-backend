@@ -719,6 +719,7 @@ class PropertyTest(BaseTest):
             self.assertIn('region_id',json.loads(res.data).keys())
             self.assertIn('price',json.loads(res.data).keys())
             self.assertIn('facilities',json.loads(res.data).keys())
+            self.assertIn('type',json.loads(res.data).keys())
 
     def test_17_property_by_slug(self):
         # note this endpoint is public data
@@ -756,6 +757,7 @@ class PropertyTest(BaseTest):
             self.assertIn('price',json.loads(res.data).keys())
             self.assertIn('facilities',json.loads(res.data).keys())
             self.assertIn('seen',json.loads(res.data).keys())
+            self.assertIn('type',json.loads(res.data).keys())
             self.assertIn('similar_listing',json.loads(res.data).keys())
 
     def test_18_search_property_by_location(self):
