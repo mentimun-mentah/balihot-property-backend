@@ -228,7 +228,7 @@ class NewsletterTest(BaseTest):
 
     def test_10_search_newsletter_by_title(self):
         with self.app() as client:
-            res = client.get('/newsletter/search-by-title?q=a')
+            res = client.get('/newsletter/search-by-title?q=e')
             self.assertEqual(200,res.status_code)
             self.assertNotEqual([],json.loads(res.data))
 
