@@ -1,5 +1,5 @@
 from services.serve import db
-from sqlalchemy import func
+from sqlalchemy import func, desc, asc
 
 class Newsletter(db.Model):
     __tablename__ = 'newsletters'
@@ -32,6 +32,23 @@ class Newsletter(db.Model):
 
     def change_update_time(self) -> "Newsletter":
         self.updated_at = func.now()
+
+    @classmethod
+    def search_by_title(cls,q: str) -> "Newsletter":
+        return cls.query.filter(cls.title.like(f"%{q}%")).limit(10).all()
+
+    @classmethod
+    def search_newsletters(cls,per_page: int, page: int, **args) -> "Newsletter":
+        stmt = db.session.query(cls)
+        if args['order_by'] in ['asc','desc']:
+            if args['order_by'] == 'asc':
+                stmt = stmt.order_by(asc(cls.id))
+            if args['order_by'] == 'desc':
+                stmt = stmt.order_by(desc(cls.id))
+
+        if(q := args['q']): stmt = stmt.filter(cls.title.like(f"%{q}%"))
+
+        return stmt.paginate(page,per_page,error_out=False)
 
     def save_to_db(self) -> None:
         db.session.add(self)

@@ -39,8 +39,12 @@ api.add_resource(Regions.GetRegionSlug,'/region/<slug>')
 api.add_resource(Regions.CreateRegion,'/region/create')
 api.add_resource(Regions.GetUpdateDeleteRegion,'/region/crud/<int:id>')
 
+api.add_resource(Newsletters.AllNewsletters,'/newsletters')
+api.add_resource(Newsletters.GetNewsletterSlug,'/newsletter/<slug>')
 api.add_resource(Newsletters.CreateNewsletter,'/newsletter/create')
 api.add_resource(Newsletters.GetUpdateDeleteNewsletter,'/newsletter/crud/<int:id>')
+api.add_resource(Newsletters.SearchNewsletterByTitle,'/newsletter/search-by-title')
+api.add_resource(Newsletters.GetNewsletterMostPopular,'/newsletter/most-popular')
 
 api.add_resource(Teams.AllTeam,'/teams')
 api.add_resource(Teams.CreateTeam,'/team/create')
