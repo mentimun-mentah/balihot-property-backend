@@ -219,7 +219,48 @@ class NewsletterTest(BaseTest):
             self.assertEqual(400,res.status_code)
             self.assertListEqual(["The title has already been taken."],json.loads(res.data)['title'])
 
-    def test_09_validation_delete_newsletter(self):
+    def test_09_get_all_newsletter(self):
+        # check list is not empty & no need login
+        with self.app() as client:
+            res = client.get('/newsletters')
+            self.assertEqual(200,res.status_code)
+            self.assertNotEqual({},json.loads(res.data))
+
+    def test_10_search_newsletter_by_title(self):
+        with self.app() as client:
+            res = client.get('/newsletter/search-by-title?q=e')
+            self.assertEqual(200,res.status_code)
+            self.assertNotEqual([],json.loads(res.data))
+
+    def test_11_newsletter_by_slug(self):
+        # note this endpoint is public data
+        # newsletter not found
+        with self.app() as client:
+            res = client.get('/newsletter/ngawur')
+            self.assertEqual(404,res.status_code)
+            self.assertEqual("Newsletter not found",json.loads(res.data)['message'])
+
+        newsletter = Newsletter.query.filter_by(title=self.NAME).first()
+        with self.app() as client:
+            res = client.get('/newsletter/{}'.format(newsletter.slug))
+            self.assertEqual(200,res.status_code)
+            self.assertIn("id",json.loads(res.data).keys())
+            self.assertIn("title",json.loads(res.data).keys())
+            self.assertIn("slug",json.loads(res.data).keys())
+            self.assertIn("image",json.loads(res.data).keys())
+            self.assertIn("thumbnail",json.loads(res.data).keys())
+            self.assertIn("description",json.loads(res.data).keys())
+            self.assertIn("created_at",json.loads(res.data).keys())
+            self.assertIn("updated_at",json.loads(res.data).keys())
+            self.assertIn("seen",json.loads(res.data).keys())
+
+    def test_12_newsletter_most_popular(self):
+        with self.app() as client:
+            res = client.get('/newsletter/most-popular')
+            self.assertEqual(200,res.status_code)
+            self.assertTrue(type(json.loads(res.data)) is list)
+
+    def test_13_validation_delete_newsletter(self):
         self.login(self.EMAIL_TEST_2)
         # check user is admin
         with self.app() as client:
@@ -234,7 +275,7 @@ class NewsletterTest(BaseTest):
             self.assertEqual(404,res.status_code)
             self.assertEqual("Newsletter not found",json.loads(res.data)['message'])
 
-    def test_10_delete_newsletter_one(self):
+    def test_14_delete_newsletter_one(self):
         newsletter = Newsletter.query.filter_by(title=self.NAME).first()
 
         with self.app() as client:
@@ -243,7 +284,7 @@ class NewsletterTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success delete newsletter.",json.loads(res.data)['message'])
 
-    def test_11_delete_newsletter_two(self):
+    def test_15_delete_newsletter_two(self):
         newsletter = Newsletter.query.filter_by(title=self.NAME_2).first()
 
         with self.app() as client:

@@ -1,6 +1,7 @@
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required
 from services.models.NewsletterModel import Newsletter
+from services.models.VisitModel import Visit
 from services.schemas.newsletters.NewsletterSchema import NewsletterSchema
 from services.schemas.newsletters.AddImageNewsletterSchema import AddImageNewsletterSchema
 from services.schemas.newsletters.UpdateImageNewsletterSchema import UpdateImageNewsletterSchema
@@ -87,3 +88,74 @@ class GetUpdateDeleteNewsletter(Resource):
         MagicImage.delete_folder(name_folder=newsletter.slug,path_delete='newsletters/')
         newsletter.delete_from_db()
         return {"message":"Success delete newsletter."}, 200
+
+class AllNewsletters(Resource):
+    def get(self):
+        per_page = request.args.get('per_page',default=10,type=int)
+        page = request.args.get('page',default=1,type=int)
+
+        order_by = request.args.get('order_by',default='desc',type=str)
+        q = request.args.get('q',default=None,type=str)
+
+        args = {
+            'q': q,
+            'order_by': order_by,
+        }
+
+        newsletters = Newsletter.search_newsletters(per_page=per_page,page=page,**args)
+        data = _newsletter_schema.dump(newsletters.items,many=True)
+
+        results = dict(
+            data = data,
+            next_num = newsletters.next_num,
+            prev_num = newsletters.prev_num,
+            page = newsletters.page,
+            iter_pages = [x for x in newsletters.iter_pages()]
+        )
+
+        return results, 200
+
+class GetNewsletterSlug(Resource):
+    def get(self,slug: str):
+        newsletter = Newsletter.query.filter_by(slug=slug).first_or_404("Newsletter not found")
+        # set visit if ip not found
+        Visit.set_visit(ip=request.remote_addr,visitable_id=newsletter.id,visitable_type='view_newsletter')
+        data = _newsletter_schema.dump(newsletter)
+        data['seen'] = Visit.get_seen_activity(visit_type='view_newsletter',visit_id=newsletter.id)
+
+        return data, 200
+
+class GetNewsletterMostPopular(Resource):
+    def get(self):
+        limit = request.args.get('limit',default=3,type=int)
+
+        data = list()
+        for value in Visit.visit_popular_by(visit_type='view_newsletter',limit=limit):
+            index, visitor = value
+            try:
+                newsletter = Newsletter.query.get(index)
+                result = {
+                    'id': newsletter.id,
+                    'title': newsletter.title,
+                    'slug': newsletter.slug,
+                    'thumbnail': newsletter.thumbnail,
+                    'created_at': str(newsletter.created_at),
+                    'updated_at': str(newsletter.updated_at)
+                }
+                data.append(result)
+            except Exception:
+                delete_data = Visit.query.filter_by(visitable_id=index).all()
+                [x.delete_from_db() for x in delete_data]
+
+        return data, 200
+
+class SearchNewsletterByTitle(Resource):
+    def get(self):
+        _newsletter_title_schema = NewsletterSchema(only=("title",))
+        q = request.args.get('q',default=None,type=str)
+
+        if q: newsletters = Newsletter.search_by_title(q=q)
+        else: newsletters = []
+
+        data = _newsletter_title_schema.dump(newsletters,many=True)
+        return data, 200
