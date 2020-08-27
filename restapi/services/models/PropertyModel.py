@@ -141,6 +141,7 @@ class Property(db.Model):
         else:
             stmt = db.session.query(cls).order_by(desc(cls.id))
 
+        if (prop_id := args['prop_id']): stmt = stmt.filter(cls.id == prop_id)
         if (region_id := args['region_id']): stmt = stmt.filter(cls.region_id == region_id)
         if (type_id := args['type_id']): stmt = stmt.filter(cls.type_id == type_id)
         if (property_for := args['property_for']):

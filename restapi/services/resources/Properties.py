@@ -221,6 +221,7 @@ class AllProperties(Resource):
         per_page = request.args.get('per_page',default=10,type=int)
         page = request.args.get('page',default=1,type=int)
 
+        prop_id = request.args.get('prop_id',default=None,type=int)
         lat = request.args.get('lat',default=None,type=float)
         lng = request.args.get('lng',default=None,type=float)
         radius = request.args.get('radius',default=None,type=int)
@@ -238,6 +239,7 @@ class AllProperties(Resource):
         max_price = request.args.get('max_price',default=None,type=int)
 
         args = {
+            'prop_id': prop_id,
             'lat':lat,
             'lng':lng,
             'radius':radius,
