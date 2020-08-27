@@ -2,7 +2,7 @@ import os, uuid
 from PIL import Image
 from io import BytesIO
 from typing import Dict
-from flask import session, redirect
+from flask import session, redirect, make_response
 from flask_restful import Resource, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jti
 from requests_oauthlib import OAuth2Session, requests
@@ -80,12 +80,22 @@ class GoogleAuthorize(Resource):
         google.fetch_token(_GOOGLE_TOKEN_URL, client_secret=_GOOGLE_CLIENT_SECRET,authorization_response=request.url)
         result = google.get('https://www.googleapis.com/oauth2/v3/userinfo').json()
 
+        # redirect to client app
+        domain = os.getenv('DOMAIN_REDIRECT')
+        response = make_response(redirect(os.getenv('APP_URL')))
+
         if (check_user := User.query.filter_by(email=result['email']).first()):
-            return CreateToken.get_token(check_user.id)
+            token = CreateToken.get_token(check_user.id)
+            response.set_cookie('access_token', token['access_token'],domain=domain)
+            response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+            return response
 
         user_id = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture'])
         # return access_token & refresh token
-        return CreateToken.get_token(user_id)
+        token = CreateToken.get_token(user_id)
+        response.set_cookie('access_token', token['access_token'],domain=domain)
+        response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+        return response
 
 class FacebookLogin(Resource):
     def get(self):
@@ -101,9 +111,19 @@ class FacebookAuthorize(Resource):
         facebook.fetch_token(_FACEBOOK_TOKEN_URL,client_secret=_FACBEOOK_CLIENT_SECRET,authorization_response=request.url)
         result = facebook.get('https://graph.facebook.com/me?fields=name,email,picture').json()
 
+        # redirect to client app
+        domain = os.getenv('DOMAIN_REDIRECT')
+        response = make_response(redirect(os.getenv('APP_URL')))
+
         if (check_user := User.query.filter_by(email=result['email']).first()):
-            return CreateToken.get_token(check_user.id)
+            token = CreateToken.get_token(check_user.id)
+            response.set_cookie('access_token', token['access_token'],domain=domain)
+            response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+            return response
 
         user_id = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture']['data']['url'])
         # return access_token & refresh token
-        return CreateToken.get_token(user_id)
+        token = CreateToken.get_token(user_id)
+        response.set_cookie('access_token', token['access_token'],domain=domain)
+        response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+        return response

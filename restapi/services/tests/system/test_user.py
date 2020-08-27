@@ -48,14 +48,13 @@ class UserTest(BaseTest):
         self.assertEqual(201,res.status_code)
         self.assertEqual('Check your email to activated user.',json.loads(res.data)['message'])
 
-        # email & username already exists
+        # email already exists
         with self.app() as client:
             res = client.post('/register',json={'username':'asd',
                 'email': self.EMAIL_TEST,'password':'asdasd',
                 'confirm_password':'asdasd'})
         self.assertEqual(400,res.status_code)
         self.assertListEqual(['The email has already been taken.'],json.loads(res.data)['email'])
-        self.assertListEqual(['The username has already been taken.'],json.loads(res.data)['username'])
 
     def test_02_invalid_token_email(self):
         # token not found
@@ -439,15 +438,7 @@ class UserTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success update your account.",json.loads(res.data)['message'])
 
-    def test_35_username_already_exists_update_account(self):
-        # check username already exists
-        with self.app() as client:
-            res = client.put('/account/update-account',json={'username': 'asd2'},
-                    headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
-            self.assertEqual(400,res.status_code)
-            self.assertListEqual(["The username has already been taken."],json.loads(res.data)['username'])
-
-    def test_36_get_data_current_user(self):
+    def test_35_get_data_current_user(self):
         with self.app() as client:
             res = client.get('/user',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(200,res.status_code)
