@@ -49,7 +49,7 @@ class SaveUser:
     _dir_avatars = os.path.join(os.path.dirname(__file__),'../static/avatars/')
 
     @classmethod
-    def save_user_to_db(cls,**args) -> int:
+    def save_user_to_db(cls,**args) -> User:
         # resource from provider
         resp = requests.get(args['picture'])
         # save image from url
@@ -64,7 +64,7 @@ class SaveUser:
         confirmation.activated = True
         confirmation.save_to_db()
 
-        return user.id
+        return user
 
 class GoogleLogin(Resource):
     def get(self):
@@ -88,13 +88,15 @@ class GoogleAuthorize(Resource):
             token = CreateToken.get_token(check_user.id)
             response.set_cookie('access_token', token['access_token'],domain=domain)
             response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+            response.set_cookie('username', check_user.username,domain=domain)
             return response
 
-        user_id = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture'])
+        user = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture'])
         # return access_token & refresh token
-        token = CreateToken.get_token(user_id)
+        token = CreateToken.get_token(user.id)
         response.set_cookie('access_token', token['access_token'],domain=domain)
         response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+        response.set_cookie('username', user.username,domain=domain)
         return response
 
 class FacebookLogin(Resource):
@@ -119,11 +121,13 @@ class FacebookAuthorize(Resource):
             token = CreateToken.get_token(check_user.id)
             response.set_cookie('access_token', token['access_token'],domain=domain)
             response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+            response.set_cookie('username', check_user.username,domain=domain)
             return response
 
-        user_id = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture']['data']['url'])
+        user = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture']['data']['url'])
         # return access_token & refresh token
-        token = CreateToken.get_token(user_id)
+        token = CreateToken.get_token(user.id)
         response.set_cookie('access_token', token['access_token'],domain=domain)
         response.set_cookie('refresh_token', token['refresh_token'],domain=domain)
+        response.set_cookie('username', user.username,domain=domain)
         return response
