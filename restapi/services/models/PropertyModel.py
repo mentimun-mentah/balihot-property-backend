@@ -29,14 +29,14 @@ class Property(db.Model):
     property_for = db.Column(db.String(15),nullable=False)
     period = db.Column(db.String(50),nullable=True)
     status = db.Column(db.String(30),nullable=True)
-    youtube = db.Column(db.String(100),nullable=False)
+    youtube = db.Column(db.String(100),nullable=True)
     description = db.Column(db.Text,nullable=False)
     hotdeal = db.Column(db.Boolean,default=False)
 
     bedroom = db.Column(db.Integer,nullable=True)
     bathroom = db.Column(db.Integer,nullable=True)
-    building_size = db.Column(db.Integer,nullable=True)
-    land_size = db.Column(db.Integer,nullable=False)
+    building_size = db.Column(db.Float,nullable=True)
+    land_size = db.Column(db.Float,nullable=False)
 
     location = db.Column(db.Text,nullable=False)
     latitude = db.Column(db.Float,nullable=False)
@@ -54,7 +54,6 @@ class Property(db.Model):
         self.slug = args['slug']
         self.images = args['images']
         self.property_for = args['property_for']
-        self.youtube = args['youtube']
         self.description = args['description']
         self.hotdeal = args['hotdeal']
         self.land_size = args['land_size']
@@ -63,6 +62,8 @@ class Property(db.Model):
         self.longitude = args['longitude']
         self.type_id = args['type_id']
         self.region_id = args['region_id']
+        if 'youtube' in args:
+            self.youtube = args['youtube']
         if 'status' in args:
             self.status = args['status']
         if 'period' in args:
@@ -78,7 +79,6 @@ class Property(db.Model):
         self.name = args['name']
         self.slug = args['slug']
         self.property_for = args['property_for']
-        self.youtube = args['youtube']
         self.description = args['description']
         self.hotdeal = args['hotdeal']
         self.land_size = args['land_size']
@@ -87,6 +87,8 @@ class Property(db.Model):
         self.longitude = args['longitude']
         self.type_id = args['type_id']
         self.region_id = args['region_id']
+        if 'youtube' in args:
+            self.youtube = args['youtube']
         if 'images' in args:
             self.images = f"{self.images},{args['images']}"
         if 'status' in args:

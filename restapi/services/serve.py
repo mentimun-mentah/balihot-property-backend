@@ -35,9 +35,7 @@ def error_handler(err):
 def check_if_token_is_revoked(decrypted_token):
     jti = decrypted_token['jti']
     entry = conn_redis.get(jti)
-    if entry is None:
-        return True
-    return entry == 'true'
+    return entry and entry == 'true'
 
 
 if app.debug:

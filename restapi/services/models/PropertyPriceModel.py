@@ -4,13 +4,13 @@ class PropertyPrice(db.Model):
     __tablename__ = 'property_prices'
 
     id = db.Column(db.Integer,primary_key=True)
-    freehold_price = db.Column(db.BigInteger,nullable=True)
-    leasehold_price = db.Column(db.BigInteger,nullable=True)
+    freehold_price = db.Column(db.Float,nullable=True)
+    leasehold_price = db.Column(db.Float,nullable=True)
     leasehold_period = db.Column(db.String(40),nullable=True)
-    daily_price = db.Column(db.BigInteger,nullable=True)
-    weekly_price = db.Column(db.BigInteger,nullable=True)
-    monthly_price = db.Column(db.BigInteger,nullable=True)
-    annually_price = db.Column(db.BigInteger,nullable=True)
+    daily_price = db.Column(db.Float,nullable=True)
+    weekly_price = db.Column(db.Float,nullable=True)
+    monthly_price = db.Column(db.Float,nullable=True)
+    annually_price = db.Column(db.Float,nullable=True)
 
     property_id = db.Column(db.Integer,db.ForeignKey('properties.id'),nullable=False)
 

@@ -91,7 +91,7 @@ class PropertyTest(BaseTest):
             self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['type_id'])
             self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['region_id'])
             self.assertListEqual(['Length must be between 3 and 9.'],json.loads(res.data)['property_for'])
-            self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['land_size'])
+            self.assertListEqual(['Not a valid number.'],json.loads(res.data)['land_size'])
             self.assertListEqual(['Length must be between 3 and 100.'],json.loads(res.data)['youtube'])
             self.assertListEqual(['Shorter than minimum length 3.'],json.loads(res.data)['description'])
             self.assertListEqual(["Not a valid boolean."],json.loads(res.data)['hotdeal'])
@@ -144,7 +144,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'sale','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -157,7 +157,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'rent','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'rent','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -170,7 +170,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,'status':'free hold',
-                    'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'sale','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -183,7 +183,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,'status':'lease hold',
-                    'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'sale','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -198,7 +198,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'rent','period':'daily,weekly,monthly,annually','land_size':1,
+                    'property_for':'rent','period':'daily,weekly,monthly,annually','land_size':1.2,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -217,7 +217,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 2,'region_id':region.id,
-                    'property_for':'sale,rent','status':'free hold,lease hold','land_size':1,
+                    'property_for':'sale,rent','status':'free hold,lease hold','land_size':1.2,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -233,7 +233,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'sale','status':'free hold','land_size':1,
+                    'property_for':'sale','status':'free hold','land_size':1.2,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -250,8 +250,8 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.post('/property/create',content_type=self.content_type,
                 data={'images': (img,'image.jpg'),'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
-                    'bathroom':1,'bedroom':1,'building_size':1,'facility':'0',
+                    'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
+                    'bathroom':1,'bedroom':1,'building_size':1.2,'facility':'0',
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -275,8 +275,8 @@ class PropertyTest(BaseTest):
                 data={'images': [(img,'image.jpg'),(img2,'image.jpg'),(img3,'image.jpg'),(img4,'image.jpg'),
                         (img5,'image.jpg')],
                 'name':'test','type_id': 1,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
-                'bathroom':1,'bedroom':1,'building_size':1,'facility':'0',
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
+                'bathroom':1,'bedroom':1,'building_size':1.2,'facility':'0',
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                 'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -302,7 +302,7 @@ class PropertyTest(BaseTest):
                 data={'images': [(img,'image.jpg'),(img2,'image.jpg'),(img3,'image.jpg'),(img4,'image.jpg'),
                         (img5,'image.jpg')],
                 'name':self.NAME,'type_id': 2,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                 'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -328,7 +328,7 @@ class PropertyTest(BaseTest):
                 data={'images': [(img,'image.jpg'),(img2,'image.jpg'),(img3,'image.jpg'),(img4,'image.jpg'),
                         (img5,'image.jpg')],
                 'name':self.NAME,'type_id': 2,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                 'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -404,7 +404,7 @@ class PropertyTest(BaseTest):
             self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['type_id'])
             self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['region_id'])
             self.assertListEqual(['Length must be between 3 and 9.'],json.loads(res.data)['property_for'])
-            self.assertListEqual(['Not a valid integer.'],json.loads(res.data)['land_size'])
+            self.assertListEqual(['Not a valid number.'],json.loads(res.data)['land_size'])
             self.assertListEqual(['Length must be between 3 and 100.'],json.loads(res.data)['youtube'])
             self.assertListEqual(['Shorter than minimum length 3.'],json.loads(res.data)['description'])
             self.assertListEqual(["Not a valid boolean."],json.loads(res.data)['hotdeal'])
@@ -448,7 +448,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'sale','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -458,7 +458,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'rent','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'rent','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -468,7 +468,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,'status':'free hold',
-                    'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'sale','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -478,7 +478,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,'status':'lease hold',
-                    'property_for':'sale','land_size':1,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
+                    'property_for':'sale','land_size':1.2,'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
             self.assertEqual(400,res.status_code)
@@ -490,7 +490,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'rent','period':'daily,weekly,monthly,annually','land_size':1,
+                    'property_for':'rent','period':'daily,weekly,monthly,annually','land_size':1.2,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -506,7 +506,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 2,'region_id':region.id,
-                    'property_for':'sale,rent','status':'free hold,lease hold','land_size':1,
+                    'property_for':'sale,rent','status':'free hold,lease hold','land_size':1.2,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -519,7 +519,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,
-                    'property_for':'sale','status':'free hold','land_size':1,
+                    'property_for':'sale','status':'free hold','land_size':1.2,
                     'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                     'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -533,8 +533,8 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':'test','type_id': 1,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
-                'bathroom':1,'bedroom':1,'building_size':1,'facility':'0',
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
+                'bathroom':1,'bedroom':1,'building_size':1.2,'facility':'0',
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                 'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -551,7 +551,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'images':(img,'image.jpg'),'name':self.NAME,'type_id': 2,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo','description':'asdasd',
                 'hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -577,7 +577,7 @@ class PropertyTest(BaseTest):
                 data={'images': [(img,'image.jpg'),(img2,'image.jpg'),(img3,'image.jpg'),(img4,'image.jpg'),
                         (img5,'image.jpg')],
                 'name':self.NAME_2,'type_id': 2,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo',
                 'description':'asdasd','hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -591,7 +591,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':self.NAME,'type_id': 2,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo','description':'asdasd',
                 'hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
@@ -605,7 +605,7 @@ class PropertyTest(BaseTest):
         with self.app() as client:
             res = client.put('/property/crud/{}'.format(property_db.id),content_type=self.content_type,
                 data={'name':self.NAME_2,'type_id': 2,'region_id':region.id,
-                'property_for':'sale','status':'free hold','freehold_price':1,'land_size':1,
+                'property_for':'sale','status':'free hold','freehold_price':1.2,'land_size':1.2,
                 'youtube':'https://www.youtube.com/watch?v=jXYKhZCvWEo','description':'asdasd',
                 'hotdeal':False,'location':'bali','latitude':1,'longitude':1},
                 headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
