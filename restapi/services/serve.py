@@ -12,10 +12,10 @@ from os import getenv
 
 load_dotenv()
 
-from services.config import Production
+from services.config import Development
 
 app = Flask(__name__)
-app.config.from_object(Production)
+app.config.from_object(Development)
 
 CORS(app)
 db = SQLAlchemy(app)
