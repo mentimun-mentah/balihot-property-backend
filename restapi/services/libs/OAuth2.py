@@ -2,7 +2,7 @@ import os, uuid
 from PIL import Image
 from io import BytesIO
 from typing import Dict
-from flask import session, redirect, make_response
+from flask import session, redirect, make_response, current_app
 from flask_restful import Resource, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jti
 from requests_oauthlib import OAuth2Session, requests
@@ -92,6 +92,16 @@ class GoogleAuthorize(Resource):
             return response
 
         user = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture'])
+        # subscribe newsletter & property
+        with current_app.test_client() as client:
+            client.post(
+                '/subscribe',
+                json={'email': user.email,'subscribe_type':'newsletter','subscribe_from':'login'}
+            )
+            client.post(
+                '/subscribe',
+                json={'email': user.email,'subscribe_type':'property','subscribe_from':'login'}
+            )
         # return access_token & refresh token
         token = CreateToken.get_token(user.id)
         response.set_cookie('access_token', token['access_token'],domain=domain)
@@ -125,6 +135,16 @@ class FacebookAuthorize(Resource):
             return response
 
         user = SaveUser.save_user_to_db(name=result['name'],email=result['email'],picture=result['picture']['data']['url'])
+        # subscribe newsletter & property
+        with current_app.test_client() as client:
+            client.post(
+                '/subscribe',
+                json={'email': user.email,'subscribe_type':'newsletter','subscribe_from':'login'}
+            )
+            client.post(
+                '/subscribe',
+                json={'email': user.email,'subscribe_type':'property','subscribe_from':'login'}
+            )
         # return access_token & refresh token
         token = CreateToken.get_token(user.id)
         response.set_cookie('access_token', token['access_token'],domain=domain)

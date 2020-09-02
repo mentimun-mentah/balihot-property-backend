@@ -1,4 +1,5 @@
 import os
+from flask import current_app
 from flask_restful import Resource, request
 from flask_jwt_extended import (
     create_access_token,
@@ -59,6 +60,16 @@ class ConfirmEmail(Resource):
         # store to database redis
         conn_redis.set(access_jti, 'false', _ACCESS_EXPIRES)
         conn_redis.set(refresh_jti, 'false', _REFRESH_EXPIRES)
+        # subscribe newsletter & property
+        with current_app.test_client() as client:
+            client.post(
+                '/subscribe',
+                json={'email': confirmation.user.email,'subscribe_type':'newsletter','subscribe_from':'login'}
+            )
+            client.post(
+                '/subscribe',
+                json={'email': confirmation.user.email,'subscribe_type':'property','subscribe_from':'login'}
+            )
         return {"access_token": access_token,"refresh_token": refresh_token,"username": confirmation.user.username}, 200
 
 class ResendEmail(Resource):
