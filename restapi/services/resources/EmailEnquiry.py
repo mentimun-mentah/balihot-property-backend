@@ -1,4 +1,5 @@
 import os
+from flask import current_app
 from flask_restful import Resource, request
 from services.libs.MailSmtp import MailSmtp, MailSmtpException
 from services.schemas.email_enquiries.EmailEnquirySchema import EmailEnquirySchema
@@ -18,6 +19,16 @@ class SendEmailEnquiry(Resource):
                 'email/EmailEnquiry.html',
                 **args
             )
+            # subscribe newsletter & property
+            with current_app.test_client() as client:
+                client.post(
+                    '/subscribe',
+                    json={'email': args['sender_email'],'subscribe_type':'newsletter','subscribe_from':'enquiry'}
+                )
+                client.post(
+                    '/subscribe',
+                    json={'email': args['sender_email'],'subscribe_type':'property','subscribe_from':'enquiry'}
+                )
         except MailSmtpException as err:
             return {"error":str(err)}, 500
 
