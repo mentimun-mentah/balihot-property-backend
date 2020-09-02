@@ -9,7 +9,8 @@ from services.resources import (
     Wishlists,
     Dashboard,
     EmailEnquiry,
-    Newsletters
+    Newsletters,
+    Subscribes
 )
 from services.libs import OAuth2
 
@@ -74,6 +75,9 @@ api.add_resource(Dashboard.GetVisitorProperties,'/dashboard/visitor-properties')
 api.add_resource(Dashboard.GetLovedProperties,'/dashboard/loved-properties')
 
 api.add_resource(EmailEnquiry.SendEmailEnquiry,'/send-email-enquiry')
+
+api.add_resource(Subscribes.SubscribeContent,'/subscribe')
+api.add_resource(Subscribes.UnsubscribeContent,'/unsubscribe/<id>')
 
 
 if __name__ == '__main__':
