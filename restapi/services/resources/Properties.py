@@ -1,5 +1,7 @@
+import os
+from flask import current_app
 from flask_restful import Resource, request
-from flask_jwt_extended import jwt_required, jwt_optional, get_jwt_identity
+from flask_jwt_extended import jwt_required, jwt_optional, get_jwt_identity, create_access_token
 from services.models.UserModel import User
 from services.models.TypeModel import Type
 from services.models.VisitModel import Visit
@@ -110,6 +112,28 @@ class CreateProperty(Resource):
             # many to many between property and facility
             [property_db.facilities.append(Facility.query.get(int(facility))) for facility in data['facility'].split(',')]
             property_db.save_to_db()
+
+        # send email notification to subscriber
+        access_token = create_access_token(identity=get_jwt_identity())
+        first_image = property_db.images.split(',')[0]
+        with current_app.test_client() as client:
+            client.post(
+                '/send-email/subscriber',
+                headers={'Authorization':f"Bearer {access_token}"},
+                json={
+                    'subscribe_type':'property',
+                    'subject': f"Property: {property_db.name}",
+                    'html':'email/EmailProperty.html',
+                    'content': {
+                        'image': f"{os.getenv('BACKEND_URL')}/static/properties/{property_db.slug}/{first_image}",
+                        'link': f"{os.getenv('APP_URL')}/property/{property_db.slug}",
+                        'name': property_db.name,
+                        'description': property_db.description,
+                        'created_at': property_db.created_at.strftime("%d %B %Y")
+                    }
+                }
+            )
+
         return {"message":"Success add property."}, 201
 
 class GetUpdateDeleteProperty(Resource):

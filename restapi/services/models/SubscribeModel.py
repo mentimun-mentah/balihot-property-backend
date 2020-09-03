@@ -1,5 +1,6 @@
 import uuid
 from services.serve import db
+from services.libs.MailSmtp import MailSmtp
 from sqlalchemy import func
 
 class Subscribe(db.Model):
@@ -20,6 +21,15 @@ class Subscribe(db.Model):
     @classmethod
     def check_email_and_type_exists(cls, email: str, subscribe_type: str) -> "Subscribe":
         return cls.query.filter(cls.email == email, cls.subscribe_type == subscribe_type).first()
+
+    @classmethod
+    def send_email_to_subscriber(cls,**args) -> None:
+        search_email = cls.query.filter(cls.subscribe_type == args['subscribe_type']).all()
+        emails = [x.email for x in search_email]
+        if args['subscribe_type'] == 'testing':
+            emails = ['asd@gmail.com']
+
+        MailSmtp.send_email(emails,args['subject'],args['html'],**args['content'])
 
     def save_to_db(self) -> None:
         db.session.add(self)

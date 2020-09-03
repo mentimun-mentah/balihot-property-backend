@@ -1,6 +1,10 @@
 from flask_restful import Resource, request
+from flask_jwt_extended import jwt_required
 from services.models.SubscribeModel import Subscribe
 from services.schemas.subscribes.SubscribeSchema import SubscribeSchema
+from services.schemas.subscribes.SendEmailSubscriberSchema import SendEmailSubscriberSchema
+from services.libs.MailSmtp import MailSmtpException
+from services.middleware.Admin import admin_required
 
 _subscribe_schema = SubscribeSchema()
 
@@ -17,3 +21,17 @@ class UnsubscribeContent(Resource):
         subscribe = Subscribe.query.filter_by(id=id).first_or_404('Subscribe not found')
         subscribe.delete_from_db()
         return {"message":"Success unsubscribe content."}, 200
+
+class SendEmailToSubscriber(Resource):
+    @jwt_required
+    @admin_required
+    def post(self):
+        _send_email_subscriber = SendEmailSubscriberSchema()
+        data = request.get_json()
+        args = _send_email_subscriber.load(data)
+        try:
+            Subscribe.send_email_to_subscriber(**args)
+        except MailSmtpException as err:
+            return {"error":str(err)}, 500
+
+        return {"message":"Success send email to subscriber."}, 200
