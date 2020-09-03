@@ -291,7 +291,7 @@
                                        src="{{image}}"
                                        alt="Image"
                                        title="Image"
-                                       style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 320px; display: block;"
+                                       style="text-decoration: none; -ms-interpolation-mode: bicubic; height: 218px; border: 0; width: 100%; max-width: 320px; display: block;object-fit: cover;"
                                        width="320"
                                       />
                                     </div>
@@ -339,7 +339,7 @@
                                           class="truncate-desc"
                                           style="font-size: 14px; line-height: 1.5; word-break: break-word; mso-line-height-alt: 21px; margin: 0;text-align: justify;"
                                         >
-                                        {{ description }}
+                                        {{ description|truncate(104) }}
                                         </p>
                                       </div>
                                       <div

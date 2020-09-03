@@ -37,13 +37,14 @@ class CreateNewsletter(Resource):
         newsletter.save_to_db()
         # send email notification to subscriber
         access_token = create_access_token(identity=get_jwt_identity())
+        title_email = newsletter.title[:25] + '...' if len(newsletter.title) > 25 else newsletter.title
         with current_app.test_client() as client:
             client.post(
                 '/send-email/subscriber',
                 headers={'Authorization':f"Bearer {access_token}"},
                 json={
                     'subscribe_type':'newsletter',
-                    'subject': f"Newsletter: {newsletter.title}",
+                    'subject': f"Newsletter: {title_email}",
                     'html':'email/EmailNewsletter.html',
                     'content': {
                         'image': f"{os.getenv('BACKEND_URL')}/static/newsletters/{newsletter.slug}/{newsletter.thumbnail}",
