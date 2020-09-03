@@ -1,5 +1,7 @@
+import os
+from flask import current_app
 from flask_restful import Resource, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from services.models.NewsletterModel import Newsletter
 from services.models.VisitModel import Visit
 from services.schemas.newsletters.NewsletterSchema import NewsletterSchema
@@ -33,6 +35,26 @@ class CreateNewsletter(Resource):
 
         newsletter = Newsletter(slug=slug,image=image.FILE_NAME,thumbnail=thumbnail.FILE_NAME,**data)
         newsletter.save_to_db()
+        # send email notification to subscriber
+        access_token = create_access_token(identity=get_jwt_identity())
+        with current_app.test_client() as client:
+            client.post(
+                '/send-email/subscriber',
+                headers={'Authorization':f"Bearer {access_token}"},
+                json={
+                    'subscribe_type':'newsletter',
+                    'subject': f"Newsletter: {newsletter.title}",
+                    'html':'email/EmailNewsletter.html',
+                    'content': {
+                        'image': f"{os.getenv('BACKEND_URL')}/static/newsletters/{newsletter.slug}/{newsletter.thumbnail}",
+                        'link': f"{os.getenv('APP_URL')}/news/{newsletter.slug}",
+                        'title': newsletter.title,
+                        'description': newsletter.description,
+                        'created_at': newsletter.created_at.strftime("%d %B %Y")
+                    }
+                }
+            )
+
         return {"message":"Success add newsletter."}, 201
 
 class GetUpdateDeleteNewsletter(Resource):
