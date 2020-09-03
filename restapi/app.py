@@ -77,6 +77,7 @@ api.add_resource(Dashboard.GetLovedProperties,'/dashboard/loved-properties')
 api.add_resource(EmailEnquiry.SendEmailEnquiry,'/send-email-enquiry')
 
 api.add_resource(Subscribes.SubscribeContent,'/subscribe')
+api.add_resource(Subscribes.GetSubscribeUser,'/subscribe/user')
 api.add_resource(Subscribes.UnsubscribeContent,'/unsubscribe/<id>')
 api.add_resource(Subscribes.SendEmailToSubscriber,'/send-email/subscriber')
 

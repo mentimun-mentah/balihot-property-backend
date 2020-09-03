@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from services.models.UserModel import User
 from services.models.SubscribeModel import Subscribe
 from services.schemas.subscribes.SubscribeSchema import SubscribeSchema
 from services.schemas.subscribes.SendEmailSubscriberSchema import SendEmailSubscriberSchema
@@ -21,6 +22,13 @@ class UnsubscribeContent(Resource):
         subscribe = Subscribe.query.filter_by(id=id).first_or_404('Subscribe not found')
         subscribe.delete_from_db()
         return {"message":"Success unsubscribe content."}, 200
+
+class GetSubscribeUser(Resource):
+    @jwt_required
+    def get(self):
+        user = User.query.get(get_jwt_identity())
+        subscribe = Subscribe.query.filter_by(email=user.email).all()
+        return _subscribe_schema.dump(subscribe,many=True), 200
 
 class SendEmailToSubscriber(Resource):
     @jwt_required

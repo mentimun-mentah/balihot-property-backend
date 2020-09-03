@@ -90,21 +90,27 @@ class SubscribeTest(BaseTest):
             self.assertEqual(200,res.status_code)
             self.assertEqual("Success send email to subscriber.",json.loads(res.data)['message'])
 
-    def test_05_email_already_subscribe(self):
+    def test_05_get_subscribe_of_user(self):
+        with self.app() as client:
+            res = client.get('/subscribe/user',headers={'Authorization':f"Bearer {self.ACCESS_TOKEN}"})
+            self.assertEqual(200,res.status_code)
+            self.assertNotEqual([],json.loads(res.data))
+
+    def test_06_email_already_subscribe(self):
         with self.app() as client:
             res = client.post('/subscribe',
                 json={'email': self.EMAIL_TEST,'subscribe_type':'newsletter','subscribe_from':'newsletter'})
             self.assertEqual(400,res.status_code)
             self.assertListEqual([f'{self.EMAIL_TEST} already subscribe newsletter'],json.loads(res.data)['email'])
 
-    def test_06_validation_unsubscribe(self):
+    def test_07_validation_unsubscribe(self):
         # subscribe not found
         with self.app() as client:
             res = client.delete('/unsubscribe/ngawur')
             self.assertEqual(404,res.status_code)
             self.assertEqual("Subscribe not found",json.loads(res.data)['message'])
 
-    def test_07_unsubscribe(self):
+    def test_08_unsubscribe(self):
         subscribe = Subscribe.check_email_and_type_exists(self.EMAIL_TEST,'newsletter')
         with self.app() as client:
             res = client.delete('/unsubscribe/{}'.format(subscribe.id))
