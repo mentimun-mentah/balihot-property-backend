@@ -270,7 +270,7 @@
                             src="{{image}}"
                             alt="I'm an image"
                             title="I'm an image"
-                            style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 100%; max-width: 608px; display: block;"
+                            style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: 374px; width: 100%; max-width: 608px; display: block;object-fit: cover;"
                             width="608"
                           />
                           <div
@@ -282,7 +282,7 @@
                             >
                               <span style="font-size: 34px; color: #2b3940;"
                                 ><strong
-                                   >{{ title }}</strong
+                                   >{{ title|truncate(60) }}</strong
                                 ></span
                               >
                             </p>
@@ -310,7 +310,7 @@
                               style="font-size: 14px; line-height: 1.8; word-break: break-word; mso-line-height-alt: 25px; margin: 0;"
                             >
                             <span style="color: #7e8989;">
-                              {{ description }}
+                              {{ description|truncate(500)|safe }}
                               </span>
                             </p>
                           </div>

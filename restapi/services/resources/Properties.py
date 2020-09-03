@@ -116,13 +116,14 @@ class CreateProperty(Resource):
         # send email notification to subscriber
         access_token = create_access_token(identity=get_jwt_identity())
         first_image = property_db.images.split(',')[0]
+        title_email = property_db.name[:25] + '...' if len(property_db.name) > 25 else property_db.name
         with current_app.test_client() as client:
             client.post(
                 '/send-email/subscriber',
                 headers={'Authorization':f"Bearer {access_token}"},
                 json={
                     'subscribe_type':'property',
-                    'subject': f"Property: {property_db.name}",
+                    'subject': f"Property: {title_email}",
                     'html':'email/EmailProperty.html',
                     'content': {
                         'image': f"{os.getenv('BACKEND_URL')}/static/properties/{property_db.slug}/{first_image}",
