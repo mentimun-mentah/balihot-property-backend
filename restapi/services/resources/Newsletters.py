@@ -24,7 +24,7 @@ class CreateNewsletter(Resource):
         if Newsletter.query.filter_by(title=data['title']).first():
             raise ValidationError({'title':['The title has already been taken.']})
 
-        slug = slugify(data['title'])
+        slug = slugify(data['title'],lowercase=False)
         image = MagicImage(file=file['image'],width=3003,height=1287,path_upload='newsletters/',
             dir_name=slug,square=False)
         image.save_image()
@@ -76,7 +76,7 @@ class GetUpdateDeleteNewsletter(Resource):
         if newsletter.title != data['title'] and Newsletter.query.filter_by(title=data['title']).first():
             raise ValidationError({'title':['The title has already been taken.']})
 
-        slug = slugify(data['title'])
+        slug = slugify(data['title'],lowercase=False)
         # change folder name if name in db not same with data
         if newsletter.title != data['title']:
             MagicImage.rename_folder(old_name=newsletter.slug,new_name=slug,path_update='newsletters/')

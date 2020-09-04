@@ -13,13 +13,13 @@ class Region(db.Model):
 
     def __init__(self,**data):
         self.name = data['name']
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name,lowercase=False)
         self.image = data['image']
         self.description = data['description']
 
     def update_data_in_db(self,**data) -> "Region":
         self.name = data['name']
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name,lowercase=False)
         self.description = data['description']
         if data['image']:
             self.image = data['image']

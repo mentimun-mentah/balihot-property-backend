@@ -97,7 +97,7 @@ class CreateProperty(Resource):
         if 'facility' in data:
             ValidateProperty.check_facility(data['facility'])
         # save images
-        slug = slugify(data['name'])
+        slug = slugify(data['name'],lowercase=False)
         magic_image = MagicImage(file=files['images'],width=1200,height=800,path_upload='properties/',
             square=False,dir_name=slug,watermark='center')
         magic_image.save_image()
@@ -160,7 +160,7 @@ class GetUpdateDeleteProperty(Resource):
         if 'facility' in data:
             ValidateProperty.check_facility(data['facility'])
 
-        slug = slugify(data['name'])
+        slug = slugify(data['name'],lowercase=False)
         # change folder name if name in db not same with data
         if property_db.name != data['name']:
             MagicImage.rename_folder(old_name=property_db.slug,new_name=slug,path_update='properties/')
