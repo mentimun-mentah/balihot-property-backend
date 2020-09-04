@@ -28,8 +28,8 @@ _FACEBOOK_REDIRECT_URI = os.getenv("FB_URL")
 _FACEBOOK_SCOPE = ["email"]
 
 class CreateToken:
-    _ACCESS_EXPIRES = int(os.getenv("ACCESS_TOKEN_EXPIRES"))  # 15 minute
-    _REFRESH_EXPIRES = int(os.getenv("REFRESH_TOKEN_EXPIRES"))  # 30 days
+    _ACCESS_EXPIRES = int(os.getenv("ACCESS_TOKEN_EXPIRES"))
+    _REFRESH_EXPIRES = int(os.getenv("REFRESH_TOKEN_EXPIRES"))
 
     @classmethod
     def get_token(cls,user_id: int) -> Dict[str,str]:

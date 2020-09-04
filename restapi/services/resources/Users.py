@@ -24,8 +24,8 @@ from services.libs.MagicImage import MagicImage
 from services.serve import conn_redis
 from marshmallow import ValidationError
 
-_ACCESS_EXPIRES = int(os.getenv("ACCESS_TOKEN_EXPIRES"))  # 15 minute
-_REFRESH_EXPIRES = int(os.getenv("REFRESH_TOKEN_EXPIRES"))  # 30 days
+_ACCESS_EXPIRES = int(os.getenv("ACCESS_TOKEN_EXPIRES"))
+_REFRESH_EXPIRES = int(os.getenv("REFRESH_TOKEN_EXPIRES"))
 
 class RegisterUser(Resource):
     def post(self):

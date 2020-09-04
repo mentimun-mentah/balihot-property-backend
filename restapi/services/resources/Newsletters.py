@@ -1,7 +1,12 @@
 import os
 from flask import current_app
 from flask_restful import Resource, request
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import (
+    get_jti,
+    get_jwt_identity,
+    jwt_required,
+    create_access_token,
+)
 from services.models.NewsletterModel import Newsletter
 from services.models.VisitModel import Visit
 from services.schemas.newsletters.NewsletterSchema import NewsletterSchema
@@ -9,6 +14,7 @@ from services.schemas.newsletters.AddImageNewsletterSchema import AddImageNewsle
 from services.schemas.newsletters.UpdateImageNewsletterSchema import UpdateImageNewsletterSchema
 from services.middleware.Admin import admin_required
 from services.libs.MagicImage import MagicImage
+from services.serve import conn_redis
 from marshmallow import ValidationError
 from slugify import slugify
 
@@ -51,10 +57,15 @@ class CreateNewsletter(Resource):
                         'link': f"{os.getenv('APP_URL')}/news/{newsletter.slug}",
                         'title': newsletter.title,
                         'description': newsletter.description,
-                        'created_at': newsletter.created_at.strftime("%d %B %Y")
+                        'created_at': newsletter.created_at.strftime("%d %B %Y"),
+                        'unsubscribe': f"{os.getenv('APP_URL')}?unsubscribe=email"
                     }
                 }
             )
+        # revoke token after send notification email
+        ACCESS_EXPIRES = int(os.getenv("ACCESS_TOKEN_EXPIRES"))
+        access_jti = get_jti(encoded_token=access_token)
+        conn_redis.set(access_jti, 'true', ACCESS_EXPIRES)
 
         return {"message":"Success add newsletter."}, 201
 

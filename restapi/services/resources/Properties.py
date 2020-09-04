@@ -1,7 +1,13 @@
 import os
 from flask import current_app
 from flask_restful import Resource, request
-from flask_jwt_extended import jwt_required, jwt_optional, get_jwt_identity, create_access_token
+from flask_jwt_extended import (
+    get_jti,
+    get_jwt_identity,
+    jwt_required,
+    jwt_optional,
+    create_access_token
+)
 from services.models.UserModel import User
 from services.models.TypeModel import Type
 from services.models.VisitModel import Visit
@@ -14,6 +20,7 @@ from services.schemas.properties.UpdateImagePropertySchema import UpdateImagePro
 from services.schemas.properties.DeleteImagePropertySchema import DeleteImagePropertySchema
 from services.middleware.Admin import admin_required
 from services.libs.MagicImage import MagicImage
+from services.serve import conn_redis
 from marshmallow import ValidationError
 from slugify import slugify
 from typing import List, Dict, Union
@@ -130,10 +137,15 @@ class CreateProperty(Resource):
                         'link': f"{os.getenv('APP_URL')}/property/{property_db.slug}",
                         'name': property_db.name,
                         'description': property_db.description,
-                        'created_at': property_db.created_at.strftime("%d %B %Y")
+                        'created_at': property_db.created_at.strftime("%d %B %Y"),
+                        'unsubscribe': f"{os.getenv('APP_URL')}?unsubscribe=email"
                     }
                 }
             )
+        # revoke token after send notification email
+        ACCESS_EXPIRES = int(os.getenv("ACCESS_TOKEN_EXPIRES"))
+        access_jti = get_jti(encoded_token=access_token)
+        conn_redis.set(access_jti, 'true', ACCESS_EXPIRES)
 
         return {"message":"Success add property."}, 201
 
