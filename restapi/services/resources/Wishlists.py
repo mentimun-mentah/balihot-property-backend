@@ -34,10 +34,12 @@ class UserWishlist(Resource):
 
         type_id = request.args.get('type_id',default=None,type=int)
         status = request.args.get('status',default=None,type=str)
+        period = request.args.get('period',default=None,type=str)
 
         args = {
             'type_id':type_id,
             'status':status,
+            'period':period
         }
 
         user = User.query.get(get_jwt_identity())
