@@ -54,6 +54,9 @@ class User(db.Model):
         if (status := args['status']):
             filters = [Property.status.like(f"%{x}%") for x in status.split(',')]
             stmt = stmt.filter(or_(*filters))
+        if (period := args['period']):
+            filters = [Property.period.like(f"%{x}%") for x in period.split(',')]
+            stmt = stmt.filter(or_(*filters))
 
         properties = stmt.paginate(page,per_page,error_out=False)
         return properties
